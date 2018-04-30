@@ -7,9 +7,6 @@ This tool is based on work done by atom of team Hashcat https://hashcat.net/foru
 
 It is also based on https://hashcat.net/forum/thread-5912.html and https://www.youtube.com/watch?v=LIHACAct2vo
 
-# NOTICE
-I found a glitch in the ESS/SSP code, right now this only works with non ess in --lm until I fix my issue, so if you see SSP you can only crack the last 4 characters of NTLM, sorry
-
 # Usage
 
 ## NTLMv1-ESS
@@ -18,18 +15,24 @@ python ntlmv1-ess.py --ess "u4-netntlm::kNS:338d08f8e26de93300000000000000000000
 ```
 
 ```
-Hashfield Split:
-['u4-netntlm', '', 'kNS', '338d08f8e26de93300000000000000000000000000000000', '9526fb8c23a90751cdd619b6cea564742e1e4bf33006ba41', 'cb8086049ec4736c']
+['hashcat', '', 'DUSTIN-5AA37877', '85D5BC2CE95161CD00000000000000000000000000000000', '892F905962F76D323837F613F88DE27C2BBD6C9ABCD021D0', '1122334455667788']
 
-Hostname: u4-netntlm
-Username: kNS
-Challenge: cb8086049ec4736c
-Combined: 9526fb8c23a90751cdd619b6cea564742e1e4bf33006ba41
-F3: 338d08f8e26de93300000000000000000000000000000000
+Hostname: hashcat
+Username: DUSTIN-5AA37877
+LM Response: 85D5BC2CE95161CD00000000000000000000000000000000
+NT Response: 892F905962F76D323837F613F88DE27C2BBD6C9ABCD021D0
+Client Challenge: 85D5BC2CE95161CD
+SRV Challenge: b36d2b9a8607ea77
 
 To Calculate final 4 characters of NTLM hash use:
-./ct3_to_ntlm.bin 2e1e4bf33006ba41 cb8086049ec4736c 338d08f8e26de93300000000000000000000000000000000
+./ct3_to_ntlm.bin 2BBD6C9ABCD021D0 85D5BC2CE95161CD 85D5BC2CE95161CD00000000000000000000000000000000
 
+To crack with hashcat create a file with the following contents:
+892F905962F76D32:b36d2b9a8607ea77
+3837F613F88DE27C:b36d2b9a8607ea77
+
+To crack with hashcat:
+./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1
 ```
 
 ## NTLMv1 no ESS
