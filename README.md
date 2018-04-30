@@ -7,6 +7,9 @@ This tool is based on work done by atom of team Hashcat https://hashcat.net/foru
 
 It is also based on https://hashcat.net/forum/thread-5912.html and https://www.youtube.com/watch?v=LIHACAct2vo
 
+# NOTICE
+I found a glitch in the ESS/SSP code, right now this only works with non ess in --lm until I fix my issue
+
 # Usage
 
 ## NTLMv1-ESS
