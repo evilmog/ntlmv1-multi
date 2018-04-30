@@ -8,7 +8,7 @@ This tool is based on work done by atom of team Hashcat https://hashcat.net/foru
 It is also based on https://hashcat.net/forum/thread-5912.html and https://www.youtube.com/watch?v=LIHACAct2vo
 
 # NOTICE
-I found a glitch in the ESS/SSP code, right now this only works with non ess in --lm until I fix my issue
+I found a glitch in the ESS/SSP code, right now this only works with non ess in --lm until I fix my issue, so if you see SSP you can only crack the last 4 characters of NTLM, sorry
 
 # Usage
 
@@ -25,19 +25,11 @@ Hostname: u4-netntlm
 Username: kNS
 Challenge: cb8086049ec4736c
 Combined: 9526fb8c23a90751cdd619b6cea564742e1e4bf33006ba41
-CT1: 9526fb8c23a90751
-CT2: cdd619b6cea56474
 F3: 338d08f8e26de93300000000000000000000000000000000
 
 To Calculate final 4 characters of NTLM hash use:
 ./ct3_to_ntlm.bin 2e1e4bf33006ba41 cb8086049ec4736c 338d08f8e26de93300000000000000000000000000000000
 
-To crack with hashcat create a file with the following contents:
-9526fb8c23a90751:cb8086049ec4736c
-cdd619b6cea56474:cb8086049ec4736c
-
-To crack with hashcat:
-./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1
 ```
 
 ## NTLMv1 no ESS
