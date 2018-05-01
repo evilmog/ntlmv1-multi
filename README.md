@@ -89,3 +89,11 @@ To crack with hashcat:
 ./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1
 ```
 
+## NTLM hash to DES Key Converter for data validation testing
+```
+python ntlm-to-des.py  --ntlm 8846f7eaee8fb117ad06bdd830b7586c
+```
+```
+DESKEY1: 8922bdfdae753e62
+DESKEY2: 16d641d6ddc1c26e
+```
