@@ -94,6 +94,9 @@ To crack with hashcat:
 python ntlm-to-des.py  --ntlm 8846f7eaee8fb117ad06bdd830b7586c
 ```
 ```
-DESKEY1: 8922bdfdae753e62
-DESKEY2: 16d641d6ddc1c26e
+DESKEY1: b55d6d05e6792652
+DESKEY2: bdba82e6895a9d6a
+
+echo b55d6d05e6792652>>des.cand
+echo bdba82e6895a9d6a>>des.cand
 ```

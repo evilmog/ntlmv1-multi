@@ -52,23 +52,28 @@ ntlm_2_bin_key6_p = str(((int(ntlm_2_bin_key6, 2) % 2) ^ 1))
 ntlm_2_bin_key7_p = str(((int(ntlm_2_bin_key7, 2) % 2) ^ 1))
 ntlm_2_bin_key8_p = str(((int(ntlm_2_bin_key8, 2) % 2) ^ 1))
 
-des_1_key1 = str(hex(int(ntlm_1_bin_key1+ntlm_1_bin_key1_p, 2)))[2:4]
-des_1_key2 = str(hex(int(ntlm_1_bin_key2+ntlm_1_bin_key2_p, 2)))[2:4]
-des_1_key3 = str(hex(int(ntlm_1_bin_key3+ntlm_1_bin_key3_p, 2)))[2:4]
-des_1_key4 = str(hex(int(ntlm_1_bin_key4+ntlm_1_bin_key4_p, 2)))[2:4]
-des_1_key5 = str(hex(int(ntlm_1_bin_key5+ntlm_1_bin_key5_p, 2)))[2:4]
-des_1_key6 = str(hex(int(ntlm_1_bin_key6+ntlm_1_bin_key6_p, 2)))[2:4]
-des_1_key7 = str(hex(int(ntlm_1_bin_key7+ntlm_1_bin_key7_p, 2)))[2:4]
-des_1_key8 = str(hex(int(ntlm_1_bin_key8+ntlm_1_bin_key8_p, 2)))[2:4]
+des_1_key1 = str('{:02x}'.format(int(ntlm_1_bin_key1+ntlm_1_bin_key1_p, 2)))
+des_1_key2 = str('{:02x}'.format(int(ntlm_1_bin_key2+ntlm_1_bin_key2_p, 2)))
+des_1_key3 = str('{:02x}'.format(int(ntlm_1_bin_key3+ntlm_1_bin_key3_p, 2)))
+des_1_key4 = str('{:02x}'.format(int(ntlm_1_bin_key4+ntlm_1_bin_key4_p, 2)))
+des_1_key5 = str('{:02x}'.format(int(ntlm_1_bin_key5+ntlm_1_bin_key5_p, 2)))
+des_1_key6 = str('{:02x}'.format(int(ntlm_1_bin_key6+ntlm_1_bin_key6_p, 2)))
+des_1_key7 = str('{:02x}'.format(int(ntlm_1_bin_key7+ntlm_1_bin_key7_p, 2)))
+des_1_key8 = str('{:02x}'.format(int(ntlm_1_bin_key8+ntlm_1_bin_key8_p, 2)))
 
-des_2_key1 = str(hex(int(ntlm_2_bin_key1+ntlm_2_bin_key1_p, 2)))[2:4]
-des_2_key2 = str(hex(int(ntlm_2_bin_key2+ntlm_2_bin_key2_p, 2)))[2:4]
-des_2_key3 = str(hex(int(ntlm_2_bin_key3+ntlm_2_bin_key3_p, 2)))[2:4]
-des_2_key4 = str(hex(int(ntlm_2_bin_key4+ntlm_2_bin_key4_p, 2)))[2:4]
-des_2_key5 = str(hex(int(ntlm_2_bin_key5+ntlm_2_bin_key5_p, 2)))[2:4]
-des_2_key6 = str(hex(int(ntlm_2_bin_key6+ntlm_2_bin_key6_p, 2)))[2:4]
-des_2_key7 = str(hex(int(ntlm_2_bin_key7+ntlm_2_bin_key7_p, 2)))[2:4]
-des_2_key8 = str(hex(int(ntlm_2_bin_key8+ntlm_2_bin_key8_p, 2)))[2:4]
+des_2_key1 = str('{:02x}'.format(int(ntlm_2_bin_key1+ntlm_2_bin_key1_p, 2)))
+des_2_key2 = str('{:02x}'.format(int(ntlm_2_bin_key2+ntlm_2_bin_key2_p, 2)))
+des_2_key3 = str('{:02x}'.format(int(ntlm_2_bin_key3+ntlm_2_bin_key3_p, 2)))
+des_2_key4 = str('{:02x}'.format(int(ntlm_2_bin_key4+ntlm_2_bin_key4_p, 2)))
+des_2_key5 = str('{:02x}'.format(int(ntlm_2_bin_key5+ntlm_2_bin_key5_p, 2)))
+des_2_key6 = str('{:02x}'.format(int(ntlm_2_bin_key6+ntlm_2_bin_key6_p, 2)))
+des_2_key7 = str('{:02x}'.format(int(ntlm_2_bin_key7+ntlm_2_bin_key7_p, 2)))
+des_2_key8 = str('{:02x}'.format(int(ntlm_2_bin_key8+ntlm_2_bin_key8_p, 2)))
+
 
 print "DESKEY1: " + des_1_key1+des_1_key2+des_1_key3+des_1_key4+des_1_key5+des_1_key6+des_1_key7+des_1_key8
-print "DESKEY2: " + des_2_key1+des_2_key2+des_2_key3+des_2_key4+des_2_key5+des_2_key6+des_2_key7+des_2_key8
+print "DESKEY2: " + des_2_key1+des_2_key2+des_2_key3+des_2_key4+des_2_key5+des_2_key6+des_2_key7+des_2_key8+"\n"
+
+print "echo "+des_1_key1+des_1_key2+des_1_key3+des_1_key4+des_1_key5+des_1_key6+des_1_key7+des_1_key8+">>des.cand"
+print "echo "+des_2_key1+des_2_key2+des_2_key3+des_2_key4+des_2_key5+des_2_key6+des_2_key7+des_2_key8+">>des.cand"
+
