@@ -28,8 +28,8 @@ ct2 = ntresp[16:32]
 print "Hashfield Split:"
 print str(hashsplit) + "\n"
 
-print "Hostname: " + hashsplit[0]
-print "Username: " + hashsplit[2]
+print "Hostname: " + hashsplit[2]
+print "Username: " + hashsplit[0]
 print "LM Response: " + lmresp
 print "NT Response: " + ntresp
 print "Client Challenge: " + clientchallenge

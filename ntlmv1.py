@@ -15,8 +15,8 @@ ct3 = combined[32:48]
 print "Hashfield Split:"
 print str(hashsplit) + "\n"
 
-print "Hostname: " + hashsplit[0]
-print "Username: " + hashsplit[2]
+print "Hostname: " + hashsplit[2]
+print "Username: " + hashsplit[0]
 print "Challenge: " + challenge
 print "Combined: " + combined
 print "CT1: " + ct1
