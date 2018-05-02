@@ -1,3 +1,4 @@
+from __future__ import print_function
 import hashlib,binascii
 import argparse
 
@@ -71,9 +72,9 @@ des_2_key7 = str('{:02x}'.format(int(ntlm_2_bin_key7+ntlm_2_bin_key7_p, 2)))
 des_2_key8 = str('{:02x}'.format(int(ntlm_2_bin_key8+ntlm_2_bin_key8_p, 2)))
 
 
-print "DESKEY1: " + des_1_key1+des_1_key2+des_1_key3+des_1_key4+des_1_key5+des_1_key6+des_1_key7+des_1_key8
-print "DESKEY2: " + des_2_key1+des_2_key2+des_2_key3+des_2_key4+des_2_key5+des_2_key6+des_2_key7+des_2_key8+"\n"
+print("DESKEY1: " + des_1_key1+des_1_key2+des_1_key3+des_1_key4+des_1_key5+des_1_key6+des_1_key7+des_1_key8)
+print("DESKEY2: " + des_2_key1+des_2_key2+des_2_key3+des_2_key4+des_2_key5+des_2_key6+des_2_key7+des_2_key8+"\n")
 
-print "echo "+des_1_key1+des_1_key2+des_1_key3+des_1_key4+des_1_key5+des_1_key6+des_1_key7+des_1_key8+">>des.cand"
-print "echo "+des_2_key1+des_2_key2+des_2_key3+des_2_key4+des_2_key5+des_2_key6+des_2_key7+des_2_key8+">>des.cand"
+print("echo "+des_1_key1+des_1_key2+des_1_key3+des_1_key4+des_1_key5+des_1_key6+des_1_key7+des_1_key8+">>des.cand")
+print("echo "+des_2_key1+des_2_key2+des_2_key3+des_2_key4+des_2_key5+des_2_key6+des_2_key7+des_2_key8+">>des.cand")
 
