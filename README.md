@@ -92,6 +92,7 @@ Basically you do the following
 echo b55d6d04e67926>>des.cand
 echo bcba83e6895b9d>>des.cand
 ```
+```
 ./hashcat -m 14000 -a 0 -1 charsets/DES_full.charset --hex-charset hashes.txt des.cand
 ```
 
