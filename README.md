@@ -113,7 +113,7 @@ The actual hash looks like this
 hashcat::DUSTIN-5AA37877:85D5BC2CE95161CD00000000000000000000000000000000:892F905962F76D323837F613F88DE27C2BBD6C9ABCD021D0:1122334455667788
 ```
 
-The hashcat forums post do not use SSP, so don't try to use the SSP on on ssp hashes, you will see a stackload of zero's and thats how you can tell as the LM Response is mangled.
+The hashcat forums post do not use SSP, so don't try to use the SSP on *NON* SSP hashes, you will see a stackload of zero's and thats how you can tell as the LM Response is mangled.
 
 To use the tool run
 ```
