@@ -18,7 +18,6 @@ combinedchallenge = srvchallenge + clientchallenge
 m = hashlib.md5()
 m.update(binascii.unhexlify(combinedchallenge))
 md5hash = m.hexdigest()
-srvchallenge = md5hash[0:16]
 ct1 = ntresp[0:16]
 ct2 = ntresp[16:32]
 
@@ -36,9 +35,10 @@ print "Client Challenge: " + clientchallenge
 print "SRV Challenge: " + srvchallenge + "\n"
 
 print "To Calculate final 4 characters of NTLM hash use:"
-print "./ct3_to_ntlm.bin " + ct3 + " " + clientchallenge + " " + lmresp + "\n"
+print "./ct3_to_ntlm.bin " + ct3 + " " + srvchallenge + " " + lmresp + "\n"
 #./ct3_to_ntlm.bin 2e1e4bf33006ba41 cb8086049ec4736c 338d08f8e26de93300000000000000000000000000000000
 
+srvchallenge = md5hash[0:16]
 print "To crack with hashcat create a file with the following contents:"
 print ct1 + ":" + srvchallenge
 print ct2 + ":" + srvchallenge + "\n"
