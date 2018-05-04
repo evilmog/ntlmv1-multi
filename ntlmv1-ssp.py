@@ -9,7 +9,6 @@ parser.add_argument('--ssp', help='NTLMv1-SSP Hash in responder format', require
 args = parser.parse_args()
 
 hashsplit = args.ssp.split(':')
-srvchallenge = hashsplit[5]
 ntresp = hashsplit[4]
 ct3 = ntresp[32:48]
 lmresp = hashsplit[3]
@@ -20,7 +19,7 @@ if lmresp[16:48] != "00000000000000000000000000000000":
 
 
 clientchallenge = hashsplit[5]
-combinedchallenge = srvchallenge + lmresp[0:16]
+combinedchallenge = clientchallenge + lmresp[0:16]
 m = hashlib.md5()
 m.update(binascii.unhexlify(combinedchallenge))
 md5hash = m.hexdigest()
