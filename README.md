@@ -54,10 +54,10 @@ To crack with hashcat:
 ./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1
 ```
 
-Now the first and most important thing is the password used in this case is hashcat and we can verify the ntlm hash with
+Now the first and most important thing is the password used in this case is "password" and we can verify the ntlm hash with
 ```
-echo -n hashcat | iconv -f utf8 -t utf16le | openssl dgst -md4
-(stdin)= b4b9b02e6f09a9bd760f388b67351e2b
+echo -n password | iconv -f utf8 -t utf16le | openssl dgst -md4
+(stdin)= 8846f7eaee8fb117ad06bdd830b7586c
 ```
 
 With hashcat utils ct3_to_ntlm.bin that atom wrote you can calculate the last 4 characters of the NTLM hash from the NTLMv1 challenge, which the tool outputs
@@ -143,10 +143,10 @@ To crack with hashcat:
 ./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1
 ```
 
-Now the password we are using in this case is hashcat which has and ntlm hash of ```b4b9b02e6f09a9bd760f388b67351e2b```
+Now the password we are using in this case is password which has and ntlm hash of ```b4b9b02e6f09a9bd760f388b67351e2b```
 ```
-echo -n hashcat | iconv -f utf8 -t utf16le | openssl dgst -md4
-(stdin)= b4b9b02e6f09a9bd760f388b67351e2b
+echo -n password | iconv -f utf8 -t utf16le | openssl dgst -md4
+(stdin)= 8846f7eaee8fb117ad06bdd830b7586c
 ```
 
 So to calculate the last 4 characters of the ntlm hash for our NTLMv1-SSP chalenge we use the following command from the tool output to get ```586c```
