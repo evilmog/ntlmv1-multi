@@ -3,7 +3,8 @@ import hashlib,binascii
 def f_ntlmsplit( ntlm ):
   ntlm_1 = ntlm[0:14]
   ntlm_2 = ntlm[14:28]
-  return [ntlm_1, ntlm_2]
+  ntlm_3 = ntlm[28:32]
+  return [ntlm_1, ntlm_2, ntlm_3]
 
 def f_ntlm_to_bin( ntlm_part ):
   ntlm_part_int = int(ntlm_part, 16)
