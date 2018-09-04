@@ -18,8 +18,8 @@ if args.ntlm is not None:
   print "DESKEY1: " + f_ntlm_des_1
   print "DESKEY2: " + f_ntlm_des_2+"\n"
 
-  print "echo " + f_ntlm_des_1 + ">>des.cand"
-  print "echo " + f_ntlm_des_2 + ">>des.cand"
+  print "echo \"$HEX[" + f_ntlm_des_1 + "]\">>des.cand"
+  print "echo \"$HEX[" + f_ntlm_des_2 + "]\">>des.cand"
 
 if args.bulk is not None:
   try:
@@ -32,8 +32,8 @@ if args.bulk is not None:
           print f_ntlm_des_1
           print f_ntlm_des_2
         else:
-          print f_ntlm_des_1 + ":" + ntlm_split[2].lower()
-          print f_ntlm_des_2 + ":" + ntlm_split[2].lower()
+          print "$HEX[" + f_ntlm_des_1 + "]:" + ntlm_split[2].lower()
+          print "$HEX[" + f_ntlm_des_2 + "]:" + ntlm_split[2].lower()
   finally:
     fp.close()
 
@@ -43,14 +43,16 @@ if args.plain is not None:
       for cnt, line in enumerate(fp):
         hash = hashlib.new('md4', line.rstrip().encode('utf-16le')).digest()
         ntlm_hash = binascii.hexlify(hash)
+        print ntlm_hash
         ntlm_split = f_ntlmsplit(ntlm_hash)
+        print ntlm_split
         f_ntlm_des_1 = f_ntlm_des(ntlm_split[0])
         f_ntlm_des_2 = f_ntlm_des(ntlm_split[1])
         if args.tail is None:
           print f_ntlm_des_1
           print f_ntlm_des_2
         else:
-          print f_ntlm_des_1 + ":" + ntlm_split[2].lower()
-          print f_ntlm_des_2 + ":" + ntlm_split[2].lower()
+          print "$HEX[" + f_ntlm_des_1 + "]:" + ntlm_split[2].lower()
+          print "$HEX[" + f_ntlm_des_2 + "]:" + ntlm_split[2].lower()
   finally:
     fp.close()
