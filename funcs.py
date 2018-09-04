@@ -31,9 +31,28 @@ def f_ntlm_des_part ( ntlm_key ):
   if int(ntlm_parity % 2 == 0):
     parity=int(1)
   else:
-    parity=int(0)
+    # I swear the protocol implementation is wrong but all parity = 1
+    #  parity=int(0)
+    parity=int(1)
   des_part = str('{:02x}'.format(int(str(ntlm_key)+str(parity), 2)))
   return des_part
+
+def f_ntlm_des_parity ( ntlm_key ):
+  ntlm_part1 = int(ntlm_key[0])
+  ntlm_part2 = int(ntlm_key[1])
+  ntlm_part3 = int(ntlm_key[2])
+  ntlm_part4 = int(ntlm_key[3])
+  ntlm_part5 = int(ntlm_key[4])
+  ntlm_part6 = int(ntlm_key[5])
+  ntlm_part7 = int(ntlm_key[6])
+  ntlm_parity = (int(ntlm_key[0])+int(ntlm_key[1])+int(ntlm_key[2])+int(ntlm_key[3])+int(ntlm_key[4])+int(ntlm_key[5])+int(ntlm_key[6]))
+  if int(ntlm_parity % 2 == 0):
+    parity=int(1)
+  else:
+    # I swear this is wrong but it somehow works with parity = 1
+    #parity=int(0)
+    parity=int(1)
+  return parity,ntlm_parity,str(ntlm_key)+str(parity)
 
 def f_ntlm_des ( ntlm_key ):
   ntlm_keys = f_ntlm_to_bin(ntlm_key)
@@ -45,4 +64,4 @@ def f_ntlm_des ( ntlm_key ):
   des_key6 = str(f_ntlm_des_part(ntlm_keys[5]))
   des_key7 = str(f_ntlm_des_part(ntlm_keys[6]))
   des_key8 = str(f_ntlm_des_part(ntlm_keys[7]))
-  return (des_key1+des_key2+des_key3+des_key4+des_key5+des_key6+des_key7)
+  return (des_key1+des_key2+des_key3+des_key4+des_key5+des_key6+des_key7+des_key8)
