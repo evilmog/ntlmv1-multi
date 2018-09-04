@@ -77,6 +77,8 @@ To crack this with hashcat you use
 ./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1
 ```
 
+*** NOTE THE DES KEY CALCULATOR IS BROKEN, I SCREWED SOMETHING UP AND NEED TO FIX IT ***
+
 If you are just testing my code and know the password already you can use the des converter
 ```
 python ntlm-to-des.py --ntlm b4b9b02e6f09a9bd760f388b67351e2b
