@@ -49,5 +49,8 @@ print ct1 + ":" + srvchallenge
 print ct2 + ":" + srvchallenge + "\n"
 
 print "To crack with hashcat:"
-print "./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1"
+print "./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1\n"
 
+print "To Crack with crack.sh use the following token"
+#$NETLM$1122334455667788$0836F085B124F33895875FB1951905DD2F85252CC731BB25
+print "$NETLM$" + srvchallenge + "$" + ntresp

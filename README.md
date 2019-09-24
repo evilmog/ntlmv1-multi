@@ -190,7 +190,13 @@ Now we can crack with hashcat using the following and not waiting 8 days
 ./hashcat -m 14000 -a 0 -1 charsets/DES_full.charset --hex-charset hashes.txt des.cand
 ```
 
+### crack.sh
+A new update, crack.sh token generation will be appended to all ssp requests
 
+```
+To Crack with crack.sh use the following token
+$NETLM$b36d2b9a8607ea77$892F905962F76D323837F613F88DE27C2BBD6C9ABCD021D0
+```
 
 ## NTLM hash to DES Key Converter for data validation testing
 ```
