@@ -41,7 +41,7 @@ if lmresp[20:48] != "0000000000000000000000000000":
   print("echo \"" + ct2 + ":" + challenge + "\">>14000.hash\n")
 
   print("To crack with hashcat:")
-  print("./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1\n")
+  print("./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset 14000.hash ?1?1?1?1?1?1?1?1\n")
   print("To Crack with crack.sh use the following token")
   #$NETLM$1122334455667788$0836F085B124F33895875FB1951905DD2F85252CC731BB25
   if challenge == "1122334455667788":
@@ -80,7 +80,7 @@ if lmresp[20:48] == "0000000000000000000000000000":
   print("echo \"" + ct2 + ":" + srvchallenge + "\">>14000.hash\n")
 
   print("To crack with hashcat:")
-  print("./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1\n")
+  print("./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset 14000.hash ?1?1?1?1?1?1?1?1\n")
 
   print("To Crack with crack.sh use the following token")
   # $NETLM$1122334455667788$0836F085B124F33895875FB1951905DD2F85252CC731BB25
