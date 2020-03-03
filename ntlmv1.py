@@ -37,6 +37,9 @@ if lmresp[20:48] != "0000000000000000000000000000":
   print(ct1 + ":" + challenge)
   print(ct2 + ":" + challenge + "\n")
 
+  print("echo \"" + ct1 + ":" + challenge + "\">>14000.hash")
+  print("echo \"" + ct2 + ":" + challenge + "\">>14000.hash\n")
+
   print("To crack with hashcat:")
   print("./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1\n")
   print("To Crack with crack.sh use the following token")
@@ -73,6 +76,8 @@ if lmresp[20:48] == "0000000000000000000000000000":
   print("To crack with hashcat create a file with the following contents:")
   print(ct1 + ":" + srvchallenge)
   print(ct2 + ":" + srvchallenge + "\n")
+  print("echo \"" + ct1 + ":" + srvchallenge + "\">>14000.hash")
+  print("echo \"" + ct2 + ":" + srvchallenge + "\">>14000.hash\n")
 
   print("To crack with hashcat:")
   print("./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1\n")
