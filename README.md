@@ -1,5 +1,5 @@
 # Dec 10, 2019 Updates
-Yes this is supposedly python 3 compatible, I will likely merge the tools into one in the new year, but until then the mods have not been extensively tested but should work. I have also merged ntlmv1 and ntlmv1-ssp
+Yes this is supposedly python 3 compatible, I have also merged ntlmv1 and ntlmv1-ssp
 
 # ntlmv1-multi
 NTLMv1 Multitool
