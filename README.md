@@ -1,3 +1,10 @@
+# 10 Nov, 2020 Updates
+I added 2 new options, `--hashcat` and `--hcutils` these set the path to your hashcat and hashcat-utils respectively so you can do a direct copy and paste from the tool.
+
+You would run the tool like this if your hashcat directory was in ~/git/hashcat and your hashcat-utils directory was in ~/git/hashcat-utils:
+```python3 ./ntlmv1.py --ntlm "SERVER1$::MOG:9DE7F41D81C1207400000000000000000000000000000000:DE766A98B60D1C911DCFFFDBB3E521314B2CE34EAB63CC7B:1122334455667788" --hashcat "~/git/hashcat" --hcutils "~/git/hashcat-utils"
+```
+
 # Dec 10, 2019 Updates
 Yes this is supposedly python 3 compatible, I have also merged ntlmv1 and ntlmv1-ssp
 
