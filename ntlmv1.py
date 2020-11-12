@@ -48,7 +48,7 @@ if lmresp[20:48] != "0000000000000000000000000000":
 
   print("To crack with hashcat:")
   if args.hashcat:
-    print(args.hashcat + "/hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset 14000.hash ?1?1?1?1?1?1?1?1\n")
+    print(args.hashcat + "/hashcat -m 14000 -a 3 -1 " + args.hashcat +  "/charsets/DES_full.charset --hex-charset 14000.hash ?1?1?1?1?1?1?1?1\n")
   else:
     print("./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset 14000.hash ?1?1?1?1?1?1?1?1\n")
   print("To Crack with crack.sh use the following token")
@@ -96,7 +96,7 @@ if lmresp[20:48] == "0000000000000000000000000000":
 
   print("To crack with hashcat:")
   if args.hashcat:
-    print(args.hashcat + "/hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset 14000.hash ?1?1?1?1?1?1?1?1\n")
+    print(args.hashcat + "/hashcat -m 14000 -a 3 -1 " + args.hashcat  + "/charsets/DES_full.charset --hex-charset 14000.hash ?1?1?1?1?1?1?1?1\n")
   else:
     print("./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset 14000.hash ?1?1?1?1?1?1?1?1\n")
 
