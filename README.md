@@ -234,3 +234,16 @@ The tool now supports json output, set the flag `--json 1` and it will output js
 python3 ntlmv1.py --ntlmv1 "SERVER1$::MOG:7EF3F506F5EA510E00000000000000000000000000000000:1217169BD7BE0270A033899BD440016D3E6DACAF5894D504:ff81dfd6b12c269d" --json 1
 {"ntlmv1": "SERVER1$::MOG:7EF3F506F5EA510E00000000000000000000000000000000:1217169BD7BE0270A033899BD440016D3E6DACAF5894D504:ff81dfd6b12c269d", "user": "SERVER1$", "domain": "MOG", "challenge": "ff81dfd6b12c269d", "lmresp": "7EF3F506F5EA510E00000000000000000000000000000000", "ntresp": "1217169BD7BE0270A033899BD440016D3E6DACAF5894D504", "ct3": "3E6DACAF5894D504", "srvchallenge": "888f8ee0fa031808", "ct3_crack": "ct3_to_ntlm.bin 3E6DACAF5894D504 ff81dfd6b12c269d 7EF3F506F5EA510E00000000000000000000000000000000", "hash1": "1217169BD7BE0270:888f8ee0fa031808", "hash2": "A033899BD440016D:888f8ee0fa031808", "CRACK_SH": "$NETLM$888f8ee0fa031808$1217169BD7BE0270A033899BD440016D3E6DACAF5894D504"}
 ```
+
+The important fields are:
+* CRACK_SH - this is the field that shows the crack.sh token
+* hash1 - this is the first hash for hashcat mode 14000
+* hash2 - this is the second hash for hashcat mode 14000
+* ct3_crack - this is the command to crack ct3 using hashcat utils
+* ntlmv1 - hthis is the original ntlmv1 hash
+* user - this is the user field
+* domain - this is the domain field
+* lmresp - this is the lm response
+* ntresp - this is the nt response
+* challenge - this is the original challenge field
+* srvchallenge - if this is an SSP hash the srv challenge gets populated
