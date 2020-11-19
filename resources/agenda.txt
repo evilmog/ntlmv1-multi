@@ -1,0 +1,40 @@
+1) show bio
+cat evilmog_bio
+    evilmog_bio.png - image
+
+2) Print Spooler challenge/response
+cat ntlmv1.txt
+
+3) Talk about registry setting
+cat registry
+cat settings
+Fixed Settings in lm compat level 5
+
+4) NTLMv1 response
+cat v1_response.txt
+
+5) LM Response
+cat lm_resp.txt
+
+6) NT Response
+cat nt_resp.txt
+
+7) client challenge
+cat client_challenge.txt
+
+8) Explain SSP
+cat ssp.txt
+
+9) Demo
+
+10) credits
+cat credits.txt
+
+14) NTLMv1 Multi Tool
+cat multi.txt
+
+15) remediation
+set lm compatibility level to 5
+
+16) ad security checklist
+checklist.txt

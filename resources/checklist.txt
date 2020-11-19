@@ -1,0 +1,80 @@
+1) Read into the Microsoft Securing Privileged Access Whitepaper
+
+https://docs.microsoft.com/en-us/windows-server/identity/securing-privileged-access/securing-privileged-access
+
+2) Review the malware archaeology logging cheatsheets which include the ATT&CK lateral movement guide, windows and powershell sheets
+https://www.malwarearchaeology.com/cheat-sheets/
+
+3) review all posts on adsecurity.org
+http://adsecurity.org/
+
+4) learn to use bloodhound defensively, collectionmethod All includes ACL abuses, run monthly
+
+https://posts.specterops.io/tagged/bloodhound?gi=3270315c3d6a
+
+5) Disable LLMNR (link local multicast name resolution)
+
+6) Disable WPAD (Windows Proxy Auto Discovery)
+
+7) Disable NBT-NS (NetBIOS Name Services)
+the following powershell will do it, push via GPO
+
+$NetworkAdapters = (get-wmiobject win32_networkadapterconfiguration)
+ForEach ($NetworkAdapterItem in $NetworkAdapters) { $NetworkAdapterItem.SetTCPIPNetbios(2) }
+
+8) Enforce SMB Signing and disable SMBv1
+
+9) Disable Powershell 2, enable powershell v5, deploy poweshell transcription block logging, module logging and script block logging
+
+10) use microsoft ata (advanced threat analytics)
+
+11) deploy PAW (privileged access workstations)
+
+12) deploy red forest with full tier 0/1/2 isolation and Microsoft Privilege Identity Manager with dynamic privilege assignment
+
+13) deploy local admin password solution (LAPS)
+-ensure all local admin passwords are different between workstations, servers and VDI's. Also remove universal local admin accounts.
+
+14) remove local admin from users, ensure PAW's have no admin on that workstation for individual machine admins
+
+15) deploy credential guard
+
+16) deploy device guard
+
+17) deploy exploit guard
+
+18) deploy sysmon
+
+19) deploy applocker
+
+20) employ windows firewall blocking inbound 135-139, 389, 636 3389,445, 5985/5986 unless authentication through a VPN from managed workstations, also block these ports on internal and external network firewalls
+
+21) make sure nac and va scanners don't spray creds
+
+22) look at mimikatz protection such as rdp restricted admin mode
+http://adsecurity.org/wp-content/uploads/2014/11/Delpy-CredentialDataChart.png
+
+23) secure dynamic dns updates
+
+24) purge group policy preferences files and unattended installation files
+
+25) change the krbtgt hash twice a year
+
+26) ensure there are no paths from kerberoastable users to high value targets such as domain admin
+
+27) plant honey tokens and accounts to detect anomalous activity especially against kerberoasting with an SPN set
+
+28) enforce LDAP signing and LDAP channel binding
+
+29) mitigate a nasty exchange bug, details are here: https://dirkjanm.io/abusing-exchange-one-api-call-away-from-domain-admin/ There is a mitigations section, follow it completely including removing the excessive permissions
+
+30) remove print spooler from domain controllers or sensitive servers, you can force the machines to authenticate and relay
+
+31) follow mitigations here: https://dirkjanm.io/worst-of-both-worlds-ntlm-relaying-and-kerberos-delegation/
+
+32) Deploy Windows 10, Server 2016
+
+33) Use the Microsoft SECCON Framework
+https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-security-configuration-framework/windows-security-configuration-framework
+
+34) Disable all Lanman responses in NTLM Challenges and NTLMv1 challenge response on clients and servers.

@@ -1,0 +1,10 @@
+┌────────────────────────────────────────────┐
+│                                            │
+│                 KRBRELAYX                  │
+│   Dirk-jan Mollema https://dirkjanm.io/    │
+│   https://github.com/dirkjanm/krbrelayx    │
+│                                            │
+│     MS-RPRN Discovery: Lee Christensen     │
+│                 (@_tifkin)                 │
+│                                            │
+└────────────────────────────────────────────┘
