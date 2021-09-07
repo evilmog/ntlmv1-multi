@@ -26,14 +26,14 @@ It is also based on https://hashcat.net/forum/thread-5912.html and https://www.y
 
 # Usage
 
-## NTLMv1 without SSP
-To capture use responder with the --lm flag, without --lm you will activate ESS/SSP which will take longer to crack
+## NTLMv1 without ESS/SSP
+To capture use responder with the --disable-ess flag, without --disable-ess you will activate ESS/SSP which will take longer to crack
 
 The capture will look like this.
 ```
-[SMB] NTLMv1 Client   : 184.64.60.62
-[SMB] NTLMv1 Username : DUSTIN-5AA37877\hashcat
-[SMB] NTLMv1 Hash     : hashcat::DUSTIN-5AA37877:76365E2D142B5612980C67D057EB9EFEEE5EF6EB6FF6E04D:727B4E35F947129EA52B9CDEDAE86934BB23EF89F50FC595:1122334455667788
+[SMB] NTLMv1-SSP Client   : 184.64.60.62
+[SMB] NTLMv1-SSP Username : DUSTIN-5AA37877\hashcat
+[SMB] NTLMv1-SSP Hash     : hashcat::DUSTIN-5AA37877:76365E2D142B5612980C67D057EB9EFEEE5EF6EB6FF6E04D:727B4E35F947129EA52B9CDEDAE86934BB23EF89F50FC595:1122334455667788
 [*] Skipping previously captured hash for DUSTIN-5AA37877\hashcat
 ```
 
@@ -119,9 +119,9 @@ echo bcba83e6895b9d>>des.cand
 And you should have some reversed hashes
 
 ## NTLMv1 with ESS/SSP
-SSP changes the server challenge, if you see SSP in your responder because you didn't use --lm or the client is set not to give out a LM response then SSP gets engaged. 
+ESS/SSP changes the server challenge, if you see a stackload of zero's in the captured hash, because you didn't use --disable-ess then ESS/SSP gets engaged. 
 
-The SSP output looks like this
+The ESS/SSP output looks like this
 ```
 [SMB] NTLMv1-SSP Client   : 184.64.60.62
 [SMB] NTLMv1-SSP Username : DUSTIN-5AA37877\hashcat
@@ -133,7 +133,7 @@ The actual hash looks like this
 hashcat::DUSTIN-5AA37877:85D5BC2CE95161CD00000000000000000000000000000000:892F905962F76D323837F613F88DE27C2BBD6C9ABCD021D0:1122334455667788
 ```
 
-The hashcat forums post do not use SSP, so don't try to use the SSP on *NON* SSP hashes, you will see a stackload of zero's and thats how you can tell as the LM Response is mangled.
+The hashcat forums post do not use ESS/SSP, so don't try to use the ESS/SSP on *NON* ESS/SSP hashes, you will see a stackload of zero's and thats how you can tell as the LM Response is mangled.
 
 To use the tool run (it is python2 & 3 compatible)
 ```
