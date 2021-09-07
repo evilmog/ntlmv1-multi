@@ -84,7 +84,7 @@ if lmresp[20:48] == "0000000000000000000000000000":
   ct2 = ntresp[16:32]
 
   if args.json == None:
-    print("Hash response is ESS, consider using responder with --lm")
+    print("Hash response is ESS, consider using responder with --lm or --disable-ess with a static challenge of 1122334455667788")
     print("[-] Client Challenge: " + clientchallenge)
     print("[-] LMResp[0:16]: " + lmresp[0:16])
     print("[-] Combined Challenge: " + combinedchallenge)
