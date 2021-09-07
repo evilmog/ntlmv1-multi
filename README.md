@@ -27,7 +27,7 @@ It is also based on https://hashcat.net/forum/thread-5912.html and https://www.y
 # Usage
 
 ## NTLMv1 without SSP
-To capture use responder with the --lm flag, without --lm you will activate ESS/SSP which will take longer to crack
+To capture use responder with the --lm flag, without --lm you will activate ESS/SSP which will take longer to crack, also a new flag is out --disable-ess which will try to disable ESS and force the downgrade. Try --disable-ess first and if that fails please try --lm. If using --disable-ess or --lm ensure your client challenge is 1122334455667788 to use the FPGA, however this may trigger some network IDS/IPS protections if they see that traffic.
 
 The capture will look like this.
 ```
@@ -119,7 +119,7 @@ echo bcba83e6895b9d>>des.cand
 And you should have some reversed hashes
 
 ## NTLMv1 with ESS/SSP
-SSP changes the server challenge, if you see SSP in your responder because you didn't use --lm or the client is set not to give out a LM response then SSP gets engaged. 
+SSP changes the server challenge, if you see SSP in your responder because you didn't use --lm or the client is set not to give out a LM response then SSP gets engaged. Also --disable-ess will try to force off SSP, however this requires a recent copy (August 2021 or more recent) of impacket and responder.
 
 The SSP output looks like this
 ```
@@ -133,7 +133,7 @@ The actual hash looks like this
 hashcat::DUSTIN-5AA37877:85D5BC2CE95161CD00000000000000000000000000000000:892F905962F76D323837F613F88DE27C2BBD6C9ABCD021D0:1122334455667788
 ```
 
-The hashcat forums post do not use SSP, so don't try to use the SSP on *NON* SSP hashes, you will see a stackload of zero's and thats how you can tell as the LM Response is mangled.
+The hashcat forums post do not use SSP, so don't try to use the SSP tools on *NON* SSP hashes, you will see a stackload of zero's and thats how you can tell as the LM Response is mangled.
 
 To use the tool run (it is python2 & 3 compatible)
 ```
