@@ -253,3 +253,6 @@ The important fields are:
 * ntresp - this is the nt response
 * challenge - this is the original challenge field
 * srvchallenge - if this is an SSP hash the srv challenge gets populated
+
+# Acknowledgement / License
+This repo is based on forum posts by atom the author of hashcat and research by moxie marlinspike. as atoms code is largely MIT licensed this project has also adopted that license to be compatible. This project is not GPL so that any entity can incorporate it into a commercial project without restrictions.
