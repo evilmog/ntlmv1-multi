@@ -113,7 +113,7 @@ echo b55d6d04e67926>>des.cand
 echo bcba83e6895b9d>>des.cand
 ```
 ```
-./hashcat -m 14000 -a 0 -1 charsets/DES_full.charset --hex-charset hashes.txt des.cand
+./hashcat -m 14000 -a 0 hashes.txt des.cand
 ```
 
 And you should have some reversed hashes
@@ -210,7 +210,7 @@ echo bcba83e6895b9d>>des.cand
 
 Now we can crack with hashcat using the following and not waiting 8 days
 ```
-./hashcat -m 14000 -a 0 -1 charsets/DES_full.charset --hex-charset hashes.txt des.cand
+./hashcat -m 14000 -a 0 hashes.txt des.cand
 ```
 
 ### crack.sh
