@@ -1,3 +1,6 @@
+# NTLMv1 Multi Tool
+This tool reverses NTLMv1 hashes to NTLM, or more specifically it formats NTLMv1 challenge responses into a format that can be cracked with hashcat mode 14000
+
 # 10 Nov, 2020 Updates
 I added 2 new options, `--hashcat` and `--hcutils` these set the path to your hashcat and hashcat-utils respectively so you can do a direct copy and paste from the tool.
 
