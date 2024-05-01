@@ -80,7 +80,7 @@ echo -n password | iconv -f utf8 -t utf16le | openssl dgst -md4
 With hashcat utils ct3_to_ntlm.bin that atom wrote you can calculate the last 4 characters of the NTLM hash from the NTLMv1 challenge, which the tool outputs
 ```
 ./ct3_to_ntlm.bin BB23EF89F50FC595 1122334455667788
-568c
+586c
 ```
 
 This matches up to the end of the ntlm hash so we are good to go, the next step is cracking the hashes with hashcat so we need to make a hashes.txt file with
