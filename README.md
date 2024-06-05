@@ -66,6 +66,9 @@ A52B9CDEDAE86934:1122334455667788
 
 To crack with hashcat:
 ./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset hashes.txt ?1?1?1?1?1?1?1?1
+
+To Crack with ntlmv1.com use the following token (choose Net-NTLMv1)
+727B4E35F947129EA52B9CDEDAE86934BB23EF89F50FC595
 ```
 
 The password used in this case is "password" and we can verify the ntlm hash with
