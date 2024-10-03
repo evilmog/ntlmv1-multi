@@ -234,8 +234,8 @@ python ntlm-to-des.py  --ntlm 8846f7eaee8fb117ad06bdd830b7586c
 DESKEY1: b55d6d05e6792652
 DESKEY2: bdba82e6895a9d6a
 
-echo b55d6d05e6792652>>des.cand
-echo bdba82e6895a9d6a>>des.cand
+echo $HEX[b55d6d05e6792652]>>des.cand
+echo $HEX[bdba82e6895a9d6a]>>des.cand
 ```
 
 ## JSON Support
