@@ -112,14 +112,14 @@ python ntlm-to-des.py --ntlm b4b9b02e6f09a9bd760f388b67351e2b
 DESKEY1: b55d6d04e67926
 DESKEY2: bcba83e6895b9d
 
-echo b55d6d04e67926>>des.cand
-echo bcba83e6895b9d>>des.cand
+echo "$HEX[b55d6d04e67926]">>des.cand
+echo "$HEX[bcba83e6895b9d]">>des.cand
 ```
 
 Basically you do the following
 ```
-echo b55d6d04e67926>>des.cand
-echo bcba83e6895b9d>>des.cand
+echo "$HEX[b55d6d04e67926]">>des.cand
+echo "$HEX[bcba83e6895b9d]">>des.cand
 ```
 
 ```
@@ -211,14 +211,14 @@ This will output some data for us
 DESKEY1: b55d6d04e67926
 DESKEY2: bcba83e6895b9d
 
-echo b55d6d04e67926>>des.cand
-echo bcba83e6895b9d>>des.cand
+echo "$HEX[b55d6d04e67926]">>des.cand
+echo "$HEX[bcba83e6895b9d]">>des.cand
 ```
 
 The important part here is
 ```
-echo b55d6d04e67926>>des.cand
-echo bcba83e6895b9d>>des.cand
+echo "$HEX[b55d6d04e67926]">>des.cand
+echo "$HEX[bcba83e6895b9d]">>des.cand
 ```
 
 Now we can crack with hashcat using the following and not waiting 8 days
@@ -234,8 +234,8 @@ python ntlm-to-des.py  --ntlm 8846f7eaee8fb117ad06bdd830b7586c
 DESKEY1: b55d6d05e6792652
 DESKEY2: bdba82e6895a9d6a
 
-echo $HEX[b55d6d05e6792652]>>des.cand
-echo $HEX[bdba82e6895a9d6a]>>des.cand
+echo "$HEX[b55d6d05e6792652]">>des.cand
+echo "$HEX[bdba82e6895a9d6a]">>des.cand
 ```
 
 ## JSON Support
