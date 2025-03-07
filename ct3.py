@@ -68,7 +68,7 @@ def recover_key_from_ct3(ct3_hex, salt_hex, ess_hex=None):
     return f"{found_key & 0xFF:02x}{(found_key >> 8) & 0xFF:02x}"
 
 def main():
-    #parser = argparse.ArgumentParser(description="Recover a DES key from ct3 and salt values.")
+    parser = argparse.ArgumentParser(description="Recover a DES key from ct3 and salt values.")
     parser.add_argument("ct3", type=str, help="8-byte ciphertext (16 hex chars)")
     parser.add_argument("salt", type=str, help="8-byte salt value (16 hex chars)")
     parser.add_argument("ess", type=str, nargs='?', default=None, help="24-byte ESS value (48 hex chars, optional)")
