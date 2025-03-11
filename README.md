@@ -1,6 +1,16 @@
 # NTLMv1 Multi Tool
 This tool reverses NTLMv1 hashes to NTLM, or more specifically it formats NTLMv1 challenge responses into a format that can be cracked with hashcat mode 14000
 
+# CT3 calculation
+If you specify `--ct3 1` it will calculate the the final 4 digits of the NTLM for you, if you specify `--json 1` then  `--ct3 1` is implied ansd it will return as the element pt3, eg:
+```
+python3 ntlmv1.py --ntlm "DC1$::MOG:AC51EC464A91A35A04A862DA3106EC2B352661ECEF909C5E:AC51EC464A91A35A04A862DA3106EC2B352661ECEF909C5E:1122334455667788" --json 1
+
+{"ntlmv1": "DC1$::MOG:AC51EC464A91A35A04A862DA3106EC2B352661ECEF909C5E:AC51EC464A91A35A04A862DA3106EC2B352661ECEF909C5E:1122334455667788", "user": "DC1$", "domain": "MOG", "challenge": "1122334455667788", "lmresp": "AC51EC464A91A35A04A862DA3106EC2B352661ECEF909C5E", "ntresp": "AC51EC464A91A35A04A862DA3106EC2B352661ECEF909C5E", "ct3": "352661ECEF909C5E", "ct3_crack": "ct3_to_ntlm.bin 352661ECEF909C5E 1122334455667788", "pt3": "8c71", "hash1": "AC51EC464A91A35A:1122334455667788", "hash2": "04A862DA3106EC2B:1122334455667788"}
+```
+
+Finally in this update I have moved the functions into main() so that you can just import the module for direct use
+
 # 10 Nov, 2020 Updates
 I added 2 new options, `--hashcat` and `--hcutils` these set the path to your hashcat and hashcat-utils respectively so you can do a direct copy and paste from the tool.
 
