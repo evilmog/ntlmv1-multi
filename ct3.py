@@ -17,7 +17,7 @@ def recover_key_from_ct3(ct3_hex, challenge_hex, ess_hex=None):
     challenge_bytes = bytes.fromhex(challenge_hex)
 
     if len(ct3_bytes) != 8 or len(challenge_bytes) != 8:
-        raise ValueError("ct3 and salt must be 8 bytes (16 hex chars) each")
+        raise ValueError("ct3 and challenge must be 8 bytes (16 hex chars) each")
 
     # Convert bytes to integer representation
     ct3_val = int.from_bytes(ct3_bytes, 'big')
@@ -68,14 +68,14 @@ def recover_key_from_ct3(ct3_hex, challenge_hex, ess_hex=None):
     return f"{found_key & 0xFF:02x}{(found_key >> 8) & 0xFF:02x}"
 
 def main():
-    parser = argparse.ArgumentParser(description="Recover a DES key from ct3 and salt values.")
+    parser = argparse.ArgumentParser(description="Recover a DES key from ct3 and challenge values.")
     parser.add_argument("ct3", type=str, help="8-byte ciphertext (16 hex chars)")
-    parser.add_argument("salt", type=str, help="8-byte salt value (16 hex chars)")
+    parser.add_argument("challenge", type=str, help="8-byte challenge value (16 hex chars)")
     parser.add_argument("ess", type=str, nargs='?', default=None, help="24-byte ESS value (48 hex chars, optional)")
     
     args = parser.parse_args()
     
-    key = recover_key_from_ct3(args.ct3, args.salt, args.ess)
+    key = recover_key_from_ct3(args.ct3, args.challenge, args.ess)
     
     if key:
         print(f"Recovered key: {key}")
