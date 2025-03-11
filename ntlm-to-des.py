@@ -67,6 +67,15 @@ def f_ntlm_des ( ntlm_key ):
   des_key8 = str(f_ntlm_des_part(ntlm_keys[7]))
   return (des_key1+des_key2+des_key3+des_key4+des_key5+des_key6+des_key7+des_key8)
 
+
+def ntlm_to_des(ntlm_input):
+    if(ntlm_input):
+      ntlm_split = f_ntlmsplit(ntlm_input)
+      f_ntlm_des_1 = f_ntlm_des(ntlm_split[0])
+      f_ntlm_des_2 = f_ntlm_des(ntlm_split[1])
+      return f_ntlm_des_1, f_ntlm_des_2
+
+
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--ntlm', help='NTLM Hash', required=False)
