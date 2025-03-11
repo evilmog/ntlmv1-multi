@@ -11,17 +11,17 @@ import argparse
 from Crypto.Cipher import DES
 import hashlib
 
-def recover_key_from_ct3(ct3_hex, salt_hex, ess_hex=None):
+def recover_key_from_ct3(ct3_hex, challenge_hex, ess_hex=None):
     # Convert hex inputs to bytes
     ct3_bytes = bytes.fromhex(ct3_hex)
-    salt_bytes = bytes.fromhex(salt_hex)
+    challenge_bytes = bytes.fromhex(challenge_hex)
 
-    if len(ct3_bytes) != 8 or len(salt_bytes) != 8:
+    if len(ct3_bytes) != 8 or len(challenge_bytes) != 8:
         raise ValueError("ct3 and salt must be 8 bytes (16 hex chars) each")
 
     # Convert bytes to integer representation
     ct3_val = int.from_bytes(ct3_bytes, 'big')
-    salt_val = int.from_bytes(salt_bytes, 'big')
+    challenge_val = int.from_bytes(challenge_bytes, 'big')
 
     # Handle ESS case using fast MD5 hash
     if ess_hex:
@@ -29,8 +29,8 @@ def recover_key_from_ct3(ct3_hex, salt_hex, ess_hex=None):
         if len(ess_bytes) != 24:
             raise ValueError("ESS must be 24 bytes (48 hex chars)")
         if ess_bytes[8:] == b'\x00' * 16:
-            salt_bytes = hashlib.md5(salt_bytes + ess_bytes[:8]).digest()[:8]
-            salt_val = int.from_bytes(salt_bytes, 'big')
+            challenge_bytes = hashlib.md5(challenge_bytes + ess_bytes[:8]).digest()[:8]
+            challenge_val = int.from_bytes(challenge_bytes, 'big')
 
     # **Optimized DES brute-force loop**
     found_key = None
@@ -54,7 +54,7 @@ def recover_key_from_ct3(ct3_hex, salt_hex, ess_hex=None):
 
         # **Use PyCryptodome for fast DES encryption**
         cipher = DES.new(key_bytes, DES.MODE_ECB)
-        encrypted = cipher.encrypt(salt_bytes)
+        encrypted = cipher.encrypt(challenge_bytes)
 
         # **Fast integer comparison instead of byte-by-byte check**
         if int.from_bytes(encrypted, 'big') == ct3_val:
