@@ -65,8 +65,8 @@ def main():
     parser.add_argument('--ntlmv1', help='NTLMv1 Hash in responder format', required=True)
     parser.add_argument('--hashcat', help='hashcat path, eg: ~/git/hashcat', required=False)
     parser.add_argument('--hcutils', help='hashcat-utils path, eg: ~/git/hashcat-utils', required=False)
-    parser.add_argument('--json', help='if this is set to anything it will output json, eg: --json 1', required=False)
-    parser.add_argument('--ct3', help='if this is set to anything it will calculate ct3: eg --ct3 1', required=False)
+    parser.add_argument('--json', help='if this is set it will output to json', required=False,action='store_true')
+    parser.add_argument('--ct3', help='if this is set it will calculate ct3', required=False, action='store_true')
     args = parser.parse_args()
     # SERVER1$::MOG:7EF3F506F5EA510E00000000000000000000000000000000:1217169BD7BE0270A033899BD440016D3E6DACAF5894D504:ff81dfd6b12c269d
     # evilmog::DUSTIN-5AA37877:E343946E455EFC72746CF587C42022982F85252CC731BB25:51A539E6EE061F647CD5D48CE6C686653737C5E1DE26AC4C:1122334455667788
@@ -120,7 +120,7 @@ def main():
                     args.hashcat + "/hashcat -m 14000 -a 3 -1 " + args.hashcat + "/charsets/DES_full.charset --hex-charset 14000.hash ?1?1?1?1?1?1?1?1\n")
             else:
                 print("./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset 14000.hash ?1?1?1?1?1?1?1?1\n")
-
+            print("Once complete run output through deskey_to_ntlm.pl")
     if lmresp[20:48] == "0000000000000000000000000000":
         clientchallenge = hashsplit[5]
         combinedchallenge = clientchallenge + lmresp[0:16]

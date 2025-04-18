@@ -2,9 +2,9 @@
 This tool reverses NTLMv1 hashes to NTLM, or more specifically it formats NTLMv1 challenge responses into a format that can be cracked with hashcat mode 14000
 
 # CT3 calculation
-If you specify `--ct3 1` it will calculate the the final 4 digits of the NTLM for you, if you specify `--json 1` then  `--ct3 1` is implied ansd it will return as the element pt3, eg:
+If you specify `--ct3` it will calculate the the final 4 digits of the NTLM for you, if you specify `--json` then  `--ct3` is implied ansd it will return as the element pt3, eg:
 ```
-python3 ntlmv1.py --ntlm "DC1$::MOG:AC51EC464A91A35A04A862DA3106EC2B352661ECEF909C5E:AC51EC464A91A35A04A862DA3106EC2B352661ECEF909C5E:1122334455667788" --json 1
+python3 ntlmv1.py --ntlm "DC1$::MOG:AC51EC464A91A35A04A862DA3106EC2B352661ECEF909C5E:AC51EC464A91A35A04A862DA3106EC2B352661ECEF909C5E:1122334455667788" --json 
 
 {"ntlmv1": "DC1$::MOG:AC51EC464A91A35A04A862DA3106EC2B352661ECEF909C5E:AC51EC464A91A35A04A862DA3106EC2B352661ECEF909C5E:1122334455667788", "user": "DC1$", "domain": "MOG", "challenge": "1122334455667788", "lmresp": "AC51EC464A91A35A04A862DA3106EC2B352661ECEF909C5E", "ntresp": "AC51EC464A91A35A04A862DA3106EC2B352661ECEF909C5E", "ct3": "352661ECEF909C5E", "ct3_crack": "ct3_to_ntlm.bin 352661ECEF909C5E 1122334455667788", "pt3": "8c71", "hash1": "AC51EC464A91A35A:1122334455667788", "hash2": "04A862DA3106EC2B:1122334455667788"}
 ```
@@ -249,10 +249,10 @@ echo "$HEX[bdba82e6895a9d6a]">>des.cand
 ```
 
 ## JSON Support
-The tool now supports json output, set the flag `--json 1` and it will output json output:
+The tool now supports json output, set the flag `--json` and it will output json output:
 
 ```
-python3 ntlmv1.py --ntlmv1 "SERVER1$::MOG:7EF3F506F5EA510E00000000000000000000000000000000:1217169BD7BE0270A033899BD440016D3E6DACAF5894D504:ff81dfd6b12c269d" --json 1
+python3 ntlmv1.py --ntlmv1 "SERVER1$::MOG:7EF3F506F5EA510E00000000000000000000000000000000:1217169BD7BE0270A033899BD440016D3E6DACAF5894D504:ff81dfd6b12c269d" --json
 {"ntlmv1": "SERVER1$::MOG:7EF3F506F5EA510E00000000000000000000000000000000:1217169BD7BE0270A033899BD440016D3E6DACAF5894D504:ff81dfd6b12c269d", "user": "SERVER1$", "domain": "MOG", "challenge": "ff81dfd6b12c269d", "lmresp": "7EF3F506F5EA510E00000000000000000000000000000000", "ntresp": "1217169BD7BE0270A033899BD440016D3E6DACAF5894D504", "ct3": "3E6DACAF5894D504", "srvchallenge": "888f8ee0fa031808", "ct3_crack": "ct3_to_ntlm.bin 3E6DACAF5894D504 ff81dfd6b12c269d 7EF3F506F5EA510E00000000000000000000000000000000", "hash1": "1217169BD7BE0270:888f8ee0fa031808", "hash2": "A033899BD440016D:888f8ee0fa031808", "CRACK_SH": "$NETLM$888f8ee0fa031808$1217169BD7BE0270A033899BD440016D3E6DACAF5894D504"}
 ```
 
