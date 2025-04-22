@@ -82,7 +82,7 @@ def main():
         ct1 = ntresp[0:16]
         ct2 = ntresp[16:32]
         ct3 = ntresp[32:48]
-        if args.json is None:
+        if not args.json:
             print("Hashfield Split:")
             print(str(hashsplit) + "\n")
 
@@ -121,6 +121,7 @@ def main():
             else:
                 print("./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset 14000.hash ?1?1?1?1?1?1?1?1\n")
             print("Once complete run output through deskey_to_ntlm.pl")
+
     if lmresp[20:48] == "0000000000000000000000000000":
         clientchallenge = hashsplit[5]
         combinedchallenge = clientchallenge + lmresp[0:16]
@@ -133,7 +134,7 @@ def main():
         ct1 = ntresp[0:16]
         ct2 = ntresp[16:32]
 
-        if args.json == None:
+        if not args.json:
             print(
                 "Hash response is ESS, consider using responder with --lm or --disable-ess with a static challenge of 1122334455667788")
             print("[-] Client Challenge: " + clientchallenge)
@@ -172,8 +173,7 @@ def main():
             else:
                 print("./hashcat -m 14000 -a 3 -1 charsets/DES_full.charset --hex-charset 14000.hash ?1?1?1?1?1?1?1?1\n")
 
-
-    if args.json != None:
+    if args.json:
         if lmresp[20:48] != "0000000000000000000000000000":
             if args.hcutils:
                 data['ct3_crack'] = (args.hcutils + "/ct3_to_ntlm.bin " + ct3 + " " + challenge)
