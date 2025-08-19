@@ -1,3 +1,6 @@
+# Deprecation Notice
+This tool has been deprecated as the next generation of the tool has been merged into hashcat-utils [https://github.com/hashcat/hashcat-utils/blob/master/src/ntlmv1.py](https://github.com/hashcat/hashcat-utils/blob/master/src/ntlmv1.py)
+
 # NTLMv1 Multi Tool
 This tool reverses NTLMv1 hashes to NTLM, or more specifically it formats NTLMv1 challenge responses into a format that can be cracked with hashcat mode 14000
 
