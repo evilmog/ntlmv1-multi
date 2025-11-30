@@ -342,7 +342,7 @@ def main():
     parser.add_argument("--json", action="store_true", help="Output JSON only")
     parser.add_argument("--hashcat", action="store_true", help="Generate hashcat format strings for ct1/ct2")
     parser.add_argument("--nthash", help="32-char hex NTLM hash to compute DES keys and hashcat candidates")
-    parser.add_argument("--mschapv2", help="jtr format MSHCAPv2 Hash")
+    parser.add_argument("--mschapv2", help="jtr format MSCHAPv2 Hash")
     parser.add_argument("--password", help="Convert password into des keys for --key1 and --key 2")
 
     args = parser.parse_args()
