@@ -282,7 +282,6 @@ def parse_mschapv2(mschapv2_input, key1=None, key2=None, json_mode=False):
 
     data = {
         "challenge": chal,
-        "client_challenge": chal,
         "ct1": ct1,
         "ct2": ct2,
         "ct3": ct3
