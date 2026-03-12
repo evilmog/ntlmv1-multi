@@ -206,7 +206,7 @@ def parse_ntlmv1(ntlmv1_hash, key1=None, key2=None, show_pt3=True, json_mode=Fal
         "username": user,
         "domain": domain,
         "client_challenge": fields[5],
-        "server_challenge": challenge,
+        "server_challenge": lmresp[:16],
         "challenge": challenge,
         "lmresp": lmresp,
         "ntresp": ntresp,
