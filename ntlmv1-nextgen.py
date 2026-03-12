@@ -201,19 +201,30 @@ def parse_ntlmv1(ntlmv1_hash, key1=None, key2=None, show_pt3=True, json_mode=Fal
         m = hashlib.md5()
         m.update(binascii.unhexlify(challenge + lmresp[:16]))
         challenge = m.digest()[:8].hex()
-
-    data = {
-        "username": user.upper(),
-        "domain": domain.upper(),
-        "client_challenge": fields[5].upper(),
-        "server_challenge": lmresp[:16].upper(),
-        "challenge": challenge.upper(),
-        "lmresp": lmresp.upper(),
-        "ntresp": ntresp.upper(),
-        "ct1": ct1.upper(),
-        "ct2": ct2.upper(),
-        "ct3": ct3.upper()
-    }
+        data = {
+            "username": user.upper(),
+            "domain": domain.upper(),
+            "client_challenge": fields[5].upper(),
+            "server_challenge": lmresp[:16].upper(),
+            "challenge": challenge.upper(),
+            "lmresp": lmresp.upper(),
+            "ntresp": ntresp.upper(),
+            "ct1": ct1.upper(),
+            "ct2": ct2.upper(),
+            "ct3": ct3.upper()
+        }
+    else:
+        challenge = fields[5].upper()
+        data = {
+            "username": user.upper(),
+            "domain": domain.upper(),
+            "challenge": challenge.upper(),
+            "lmresp": lmresp.upper(),
+            "ntresp": ntresp.upper(),
+            "ct1": ct1.upper(),
+            "ct2": ct2.upper(),
+            "ct3": ct3.upper()
+        }
 
     if key1 and len(key1) == 16:
         encrypted1 = des_encrypt_block(key1, challenge)
@@ -227,7 +238,7 @@ def parse_ntlmv1(ntlmv1_hash, key1=None, key2=None, show_pt3=True, json_mode=Fal
             pt2 = des_to_ntlm_slice(key2)
             data["pt2"] = pt2.upper()
 
-    pt3 = recover_key_from_ct3(data["ct3"], data["client_challenge"], data["lmresp"])
+    pt3 = recover_key_from_ct3(data["ct3"], data["challenge"], data["lmresp"])
     data["pt3"] = pt3.upper()
 
     if data.get("pt1") and data.get("pt2") and data.get("pt3"):
