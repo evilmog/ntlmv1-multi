@@ -203,40 +203,40 @@ def parse_ntlmv1(ntlmv1_hash, key1=None, key2=None, show_pt3=True, json_mode=Fal
         challenge = m.digest()[:8].hex()
 
     data = {
-        "username": user,
-        "domain": domain,
-        "client_challenge": fields[5],
-        "server_challenge": lmresp[:16],
-        "challenge": challenge,
-        "lmresp": lmresp,
-        "ntresp": ntresp,
-        "ct1": ct1,
-        "ct2": ct2,
-        "ct3": ct3
+        "username": user.upper(),
+        "domain": domain.upper(),
+        "client_challenge": fields[5].upper(),
+        "server_challenge": lmresp[:16].upper(),
+        "challenge": challenge.upper(),
+        "lmresp": lmresp.upper(),
+        "ntresp": ntresp.upper(),
+        "ct1": ct1.upper(),
+        "ct2": ct2.upper(),
+        "ct3": ct3.upper()
     }
 
     if key1 and len(key1) == 16:
         encrypted1 = des_encrypt_block(key1, challenge)
         if encrypted1 and encrypted1.lower() == ct1.lower():
             pt1 = des_to_ntlm_slice(key1)
-            data["pt1"] = pt1
+            data["pt1"] = pt1.upper()
 
     if key2 and len(key2) == 16:
         encrypted2 = des_encrypt_block(key2, challenge)
         if encrypted2 and encrypted2.lower() == ct2.lower():
             pt2 = des_to_ntlm_slice(key2)
-            data["pt2"] = pt2
+            data["pt2"] = pt2.upper()
 
     pt3 = recover_key_from_ct3(data["ct3"], data["client_challenge"], data["lmresp"])
-    data["pt3"] = pt3
+    data["pt3"] = pt3.upper()
 
     if data.get("pt1") and data.get("pt2") and data.get("pt3"):
         data["ntlm"] = data.get("pt1") + data.get("pt2") + data.get("pt3")
 
     if key1 and len(key1) == 16:
-        data["key1"] = key1
+        data["key1"] = key1.upper()
     if key2 and len(key2) == 16:
-        data["key2"] = key2
+        data["key2"] = key2.upper()
 
     if not json_mode:
         print("\n[+] NTLMv1 Parsed:")
@@ -291,23 +291,23 @@ def parse_mschapv2(mschapv2_input, key1=None, key2=None, json_mode=False):
     if key1 and len(key1) == 16:
         encrypted1 = des_encrypt_block(key1, chal)
         if encrypted1 and encrypted1.lower() == ct1.lower():
-            data["pt1"] = des_to_ntlm_slice(key1)
+            data["pt1"] = des_to_ntlm_slice(key1).upper()
 
 
     if key2 and len(key2) == 16:
         encrypted2 = des_encrypt_block(key2, chal)
         if encrypted2 and encrypted2.lower() == ct2.lower():
-            data["pt2"] = des_to_ntlm_slice(key2)
+            data["pt2"] = des_to_ntlm_slice(key2).upper()
 
-    data["pt3"] = recover_key_from_ct3(data["ct3"], chal)
+    data["pt3"] = recover_key_from_ct3(data["ct3"], chal).upper()
 
     if data.get("pt1") and data.get("pt2") and data.get("pt3"):
         data["ntlm"] = data["pt1"] + data["pt2"] + data["pt3"]
 
     if key1 and len(key1) == 16:
-        data["key1"] = key1
+        data["key1"] = key1.upper()
     if key2 and len(key2) == 16:
-        data["key2"] = key2
+        data["key2"] = key2.upper()
 
     if not json_mode:
         print("\n[+] MSCHAPv2 Parsed:")
