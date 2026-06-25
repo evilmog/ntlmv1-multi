@@ -238,7 +238,10 @@ def parse_ntlmv1(ntlmv1_hash, key1=None, key2=None, show_pt3=True, json_mode=Fal
             pt2 = des_to_ntlm_slice(key2)
             data["pt2"] = pt2.upper()
 
-    pt3 = recover_key_from_ct3(data["ct3"], data["challenge"], data["lmresp"])
+    # data["challenge"] is already the actual value ct3 was encrypted against
+    # (raw for non-ESS, MD5-derived for ESS), so do NOT pass lmresp here or the
+    # ESS challenge would be derived a second time.
+    pt3 = recover_key_from_ct3(data["ct3"], data["challenge"])
     data["pt3"] = pt3.upper()
 
     if data.get("pt1") and data.get("pt2") and data.get("pt3"):
