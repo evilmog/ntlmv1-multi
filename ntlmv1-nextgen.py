@@ -42,6 +42,70 @@ def ntlm_hex_to_deskeys(ntlm_hex: str) -> tuple[str, str]:
     return expand(ntlm_hex[:14]), expand(ntlm_hex[14:28])
 
 
+def load_potfile(path):
+    """
+    Parse a hashcat potfile produced by cracking mode 14000 (DES) lines into a
+    lookup table. The 14000 hash lines this tool emits look like:
+
+        <ct>:<challenge>
+
+    so a cracked potfile entry looks like:
+
+        <ct>:<challenge>:<cracked des key>
+
+    The cracked DES key is 8 raw bytes. Because those bytes are almost never
+    printable, hashcat usually stores them as $HEX[....]; we decode that here.
+
+    Returns a dict mapping "<ct>:<challenge>" (lowercase hex) -> 16-hex-char
+    DES key (lowercase).
+    """
+    pot = {}
+    try:
+        with open(path, "r", encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                line = line.rstrip("\r\n")
+                if not line or line.count(":") < 2:
+                    continue
+                # hash portion is "<ct>:<challenge>", remainder is the plaintext
+                ct, challenge, plain = line.split(":", 2)
+
+                # only keep lines that look like 14000 DES hashes
+                if len(ct) != 16 or len(challenge) != 16:
+                    continue
+                try:
+                    int(ct, 16)
+                    int(challenge, 16)
+                except ValueError:
+                    continue
+
+                if plain.startswith("$HEX[") and plain.endswith("]"):
+                    deskey = plain[5:-1]
+                else:
+                    # printable plaintext: treat each char as a raw byte
+                    deskey = plain.encode("latin-1", errors="replace").hex()
+
+                if len(deskey) != 16:
+                    continue
+                try:
+                    int(deskey, 16)
+                except ValueError:
+                    continue
+
+                pot[f"{ct.lower()}:{challenge.lower()}"] = deskey.lower()
+    except FileNotFoundError:
+        print(f"[!] Potfile not found: {path}")
+    except Exception as e:
+        print(f"[!] Failed to read potfile {path}: {e}")
+    return pot
+
+
+def lookup_deskey(pot, ct, challenge):
+    """Look up a cracked DES key for a given ct/challenge pair (case-insensitive)."""
+    if not pot:
+        return None
+    return pot.get(f"{ct.lower()}:{challenge.lower()}")
+
+
 def generate_ntlm_hash(password):
     """
     Generates the NTLM hash (MD4) for a given password.
@@ -188,7 +252,7 @@ def recover_key_from_ct3(ct3_hex, challenge_hex, ess_hex=None):
     return f"{found_key & 0xFF:02x}{(found_key >> 8) & 0xFF:02x}"
 
 
-def parse_ntlmv1(ntlmv1_hash, key1=None, key2=None, show_pt3=True, json_mode=False):
+def parse_ntlmv1(ntlmv1_hash, key1=None, key2=None, show_pt3=True, json_mode=False, potfile=None):
     fields = ntlmv1_hash.strip().split(':')
     if len(fields) < 6:
         raise ValueError("Invalid NTLMv1 format")
@@ -226,6 +290,13 @@ def parse_ntlmv1(ntlmv1_hash, key1=None, key2=None, show_pt3=True, json_mode=Fal
             "ct3": ct3.upper()
         }
 
+    # Recover DES keys from a hashcat potfile when not supplied explicitly
+    if potfile:
+        if not key1:
+            key1 = lookup_deskey(potfile, ct1, data["challenge"])
+        if not key2:
+            key2 = lookup_deskey(potfile, ct2, data["challenge"])
+
     if key1 and len(key1) == 16:
         encrypted1 = des_encrypt_block(key1, challenge)
         if encrypted1 and encrypted1.lower() == ct1.lower():
@@ -260,7 +331,7 @@ def parse_ntlmv1(ntlmv1_hash, key1=None, key2=None, show_pt3=True, json_mode=Fal
     return data
 
 
-def parse_mschapv2(mschapv2_input, key1=None, key2=None, json_mode=False):
+def parse_mschapv2(mschapv2_input, key1=None, key2=None, json_mode=False, potfile=None):
     """
     Accepts:
       - $NETNTLM$... or $NETNTLMv1$... (treated the same)
@@ -300,6 +371,13 @@ def parse_mschapv2(mschapv2_input, key1=None, key2=None, json_mode=False):
         "ct2": ct2,
         "ct3": ct3
     }
+
+    # Recover DES keys from a hashcat potfile when not supplied explicitly
+    if potfile:
+        if not key1:
+            key1 = lookup_deskey(potfile, ct1, chal)
+        if not key2:
+            key2 = lookup_deskey(potfile, ct2, chal)
 
     if key1 and len(key1) == 16:
         encrypted1 = des_encrypt_block(key1, chal)
@@ -357,6 +435,7 @@ def main():
     parser.add_argument("--nthash", help="32-char hex NTLM hash to compute DES keys and hashcat candidates")
     parser.add_argument("--mschapv2", help="jtr format MSCHAPv2 Hash")
     parser.add_argument("--password", help="Convert password into des keys for --key1 and --key 2")
+    parser.add_argument("--potfile", help="hashcat potfile of cracked mode 14000 DES keys; recovers key1/key2 automatically to complete the NTLMv1->NTLM conversion")
 
     args = parser.parse_args()
 
@@ -365,6 +444,11 @@ def main():
         return
 
     output = {}
+
+    # Load cracked DES keys from a hashcat potfile if provided
+    pot = load_potfile(args.potfile) if args.potfile else None
+    if args.potfile and not pot and not args.json:
+        print(f"[!] No usable mode 14000 DES entries found in potfile: {args.potfile}")
 
     # if password is given, and key1/key2 not explicitly set, derive them automatically
 
@@ -393,17 +477,21 @@ def main():
     if args.hash_99:
         data_99 = decode_and_validate_99(args.hash_99)
 
-        if args.key1:
-            encrypted1 = des_encrypt_block(args.key1, data_99["challenge"])
-            if encrypted1 and encrypted1.lower() == data_99["ct1"].lower():
-                data_99["k1"] = args.key1
-                data_99["pt1"] = des_to_ntlm_slice(args.key1)
+        # prefer explicit keys, fall back to cracked keys from the potfile
+        k1 = args.key1 or lookup_deskey(pot, data_99["ct1"], data_99["challenge"])
+        k2 = args.key2 or lookup_deskey(pot, data_99["ct2"], data_99["challenge"])
 
-        if args.key2:
-            encrypted2 = des_encrypt_block(args.key2, data_99["challenge"])
+        if k1:
+            encrypted1 = des_encrypt_block(k1, data_99["challenge"])
+            if encrypted1 and encrypted1.lower() == data_99["ct1"].lower():
+                data_99["k1"] = k1
+                data_99["pt1"] = des_to_ntlm_slice(k1)
+
+        if k2:
+            encrypted2 = des_encrypt_block(k2, data_99["challenge"])
             if encrypted2 and encrypted2.lower() == data_99["ct2"].lower():
-                data_99["k2"] = args.key2
-                data_99["pt2"] = des_to_ntlm_slice(args.key2)
+                data_99["k2"] = k2
+                data_99["pt2"] = des_to_ntlm_slice(k2)
 
         # Optional: compute full NTLM hash if all parts are present
         if data_99.get("pt1") and data_99.get("pt2") and data_99.get("pt3"):
@@ -421,7 +509,8 @@ def main():
             args.ntlmv1,
             key1=args.key1,
             key2=args.key2,
-            json_mode=args.json
+            json_mode=args.json,
+            potfile=pot
         )
 
     # Convert NTLMv1 -> $MSCHAPv2$
@@ -432,7 +521,8 @@ def main():
                 args.mschapv2,
                 args.key1,
                 args.key2,
-                json_mode=args.json
+                json_mode=args.json,
+                potfile=pot
             )
         except Exception as e:
             print(f"[-] Failed to parse MSCHAPv2 input: {e}")
