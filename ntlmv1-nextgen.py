@@ -42,56 +42,102 @@ def ntlm_hex_to_deskeys(ntlm_hex: str) -> tuple[str, str]:
     return expand(ntlm_hex[:14]), expand(ntlm_hex[14:28])
 
 
+def _is_hex(s):
+    try:
+        int(s, 16)
+        return True
+    except ValueError:
+        return False
+
+
+def _normalize_deskey(plain):
+    """
+    Turn a potfile's recovered-key field into a 16-hex-char (8-byte) DES key
+    with parity bits, the form the rest of this tool expects.
+
+    Accepts:
+      * hashcat $HEX[....] wrapping (8 raw bytes -> 16 hex)
+      * raw printable bytes hashcat stored (8 chars -> 16 hex)
+      * a bare 16-hex 8-byte key
+      * a bare 14-hex 7-byte key (rainbowcrackalack), expanded via f_ntlm_des
+
+    Returns lowercase 16-hex string, or None if it can't be interpreted.
+    """
+    if plain.startswith("$HEX[") and plain.endswith("]"):
+        candidate = plain[5:-1]
+    elif _is_hex(plain) and len(plain) in (14, 16):
+        # already hex (rainbowcrackalack 7-byte, or a bare 8-byte key)
+        candidate = plain
+    else:
+        # printable plaintext: treat each char as a raw byte
+        candidate = plain.encode("latin-1", errors="replace").hex()
+
+    if not _is_hex(candidate):
+        return None
+
+    if len(candidate) == 14:
+        # 7-byte key (no parity) -> expand to the 8-byte parity-set form
+        candidate = f_ntlm_des(candidate)
+
+    if len(candidate) != 16:
+        return None
+    return candidate.lower()
+
+
 def load_potfile(path):
     """
-    Parse a hashcat potfile produced by cracking mode 14000 (DES) lines into a
-    lookup table. The 14000 hash lines this tool emits look like:
+    Parse a cracked DES potfile into a ct -> key lookup table. Two formats are
+    accepted:
 
-        <ct>:<challenge>
-
-    so a cracked potfile entry looks like:
+    hashcat mode 14000 (the lines this tool emits, "<ct>:<challenge>", cracked):
 
         <ct>:<challenge>:<cracked des key>
 
-    The cracked DES key is 8 raw bytes. Because those bytes are almost never
-    printable, hashcat usually stores them as $HEX[....]; we decode that here.
+    rainbowcrackalack:
 
-    Returns a dict mapping "<ct>:<challenge>" (lowercase hex) -> 16-hex-char
-    DES key (lowercase).
+        <ct>:<cracked des key>
+
+    The cracked key may be a hashcat $HEX[....] blob (8 raw bytes), bare printable
+    bytes, a bare 16-hex 8-byte key, or a bare 14-hex 7-byte key. All are
+    normalized to the 16-hex-char (8-byte, parity-set) form used elsewhere.
+
+    Returns a dict with two kinds of keys, both lowercase hex:
+        "<ct>:<challenge>" -> deskey   (when the challenge is known)
+        "<ct>"             -> deskey   (always, so lookups work either way)
+    Downstream code re-verifies every key with des_encrypt_block, so the looser
+    ct-only lookup is safe.
     """
     pot = {}
     try:
         with open(path, "r", encoding="utf-8", errors="replace") as fh:
             for line in fh:
                 line = line.rstrip("\r\n")
-                if not line or line.count(":") < 2:
-                    continue
-                # hash portion is "<ct>:<challenge>", remainder is the plaintext
-                ct, challenge, plain = line.split(":", 2)
-
-                # only keep lines that look like 14000 DES hashes
-                if len(ct) != 16 or len(challenge) != 16:
-                    continue
-                try:
-                    int(ct, 16)
-                    int(challenge, 16)
-                except ValueError:
+                if not line or ":" not in line:
                     continue
 
-                if plain.startswith("$HEX[") and plain.endswith("]"):
-                    deskey = plain[5:-1]
+                fields = line.split(":")
+                ct = fields[0]
+                if len(ct) != 16 or not _is_hex(ct):
+                    continue
+
+                if len(fields) >= 3:
+                    # hashcat 14000: <ct>:<challenge>:<key...>
+                    challenge = fields[1]
+                    plain = line.split(":", 2)[2]
+                    if len(challenge) != 16 or not _is_hex(challenge):
+                        continue
                 else:
-                    # printable plaintext: treat each char as a raw byte
-                    deskey = plain.encode("latin-1", errors="replace").hex()
+                    # rainbowcrackalack: <ct>:<key>
+                    challenge = None
+                    plain = fields[1]
 
-                if len(deskey) != 16:
-                    continue
-                try:
-                    int(deskey, 16)
-                except ValueError:
+                deskey = _normalize_deskey(plain)
+                if not deskey:
                     continue
 
-                pot[f"{ct.lower()}:{challenge.lower()}"] = deskey.lower()
+                if challenge is not None:
+                    pot[f"{ct.lower()}:{challenge.lower()}"] = deskey
+                pot[ct.lower()] = deskey
     except FileNotFoundError:
         print(f"[!] Potfile not found: {path}")
     except Exception as e:
@@ -100,10 +146,14 @@ def load_potfile(path):
 
 
 def lookup_deskey(pot, ct, challenge):
-    """Look up a cracked DES key for a given ct/challenge pair (case-insensitive)."""
+    """
+    Look up a cracked DES key for a ciphertext (case-insensitive). Prefers an
+    exact ct/challenge match (hashcat 14000 entries) and falls back to a
+    ct-only match (rainbowcrackalack entries, which carry no challenge).
+    """
     if not pot:
         return None
-    return pot.get(f"{ct.lower()}:{challenge.lower()}")
+    return pot.get(f"{ct.lower()}:{challenge.lower()}") or pot.get(ct.lower())
 
 
 def generate_ntlm_hash(password):
@@ -448,7 +498,7 @@ def main():
     # Load cracked DES keys from a hashcat potfile if provided
     pot = load_potfile(args.potfile) if args.potfile else None
     if args.potfile and not pot and not args.json:
-        print(f"[!] No usable mode 14000 DES entries found in potfile: {args.potfile}")
+        print(f"[!] No usable cracked DES entries (hashcat 14000 or rainbowcrackalack) found in potfile: {args.potfile}")
 
     # if password is given, and key1/key2 not explicitly set, derive them automatically
 

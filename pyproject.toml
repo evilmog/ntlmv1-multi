@@ -1,0 +1,13 @@
+[project]
+name = "ntlmv1-multi"
+version = "0.1.0"
+description = "Reverse/format NTLMv1 challenge-responses into hashcat mode 14000 (and convert to NTLM)"
+readme = "README.md"
+requires-python = ">=3.14"
+license = { file = "LICENSE" }
+dependencies = [
+    "pycryptodome>=3.20",
+]
+
+[tool.uv]
+package = false

@@ -286,5 +286,10 @@ The recovered NTLM hash is printed as the `NTLM` field (or `ntlm` in `--json`).
 (matching on the MD5-derived challenge), and ignores unrelated potfile entries.
 Explicit `--key1`/`--key2` still take precedence over potfile matches.
 
+Both hashcat and rainbowcrackalack potfiles are accepted. The cracked key field
+may be a hashcat `$HEX[...]` blob, bare printable bytes, a bare 16-hex 8-byte key,
+or a bare 14-hex 7-byte key (the form rainbowcrackalack emits) — all are
+normalized and re-validated against the ciphertext before use.
+
 # Acknowledgement / License
 This repo is based on forum posts by atom the author of hashcat and research by moxie marlinspike. as atoms code is largely MIT licensed this project has also adopted that license to be compatible. This project is not GPL so that any entity can incorporate it into a commercial project without restrictions.
