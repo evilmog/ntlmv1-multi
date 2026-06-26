@@ -31,6 +31,44 @@ This tool is based on work done by atom of team Hashcat https://hashcat.net/foru
 
 It is also based on https://hashcat.net/forum/thread-5912.html and https://www.youtube.com/watch?v=LIHACAct2vo
 
+# Install
+
+Install the `ntlmv1_nextgen.py` next-gen tool as a global `ntlmv1-multi` command with uv:
+
+```
+uv tool install .
+ntlmv1-multi --ntlmv1 "hashcat::DUSTIN-5AA37877:76365E2D142B5612980C67D057EB9EFEEE5EF6EB6FF6E04D:727B4E35F947129EA52B9CDEDAE86934BB23EF89F50FC595:1122334455667788"
+```
+
+Or run it directly from the repo without installing:
+
+```
+uv run ntlmv1_nextgen.py --ntlmv1 "hashcat::DUSTIN-5AA37877:..."
+```
+
+The project ships a `pyproject.toml` (Python 3.14+, `pycryptodome` dependency) so
+`uv` resolves everything for you; the original `ntlmv1.py` still runs standalone
+with any Python 3 interpreter.
+
+# Next-gen tool (`ntlmv1_nextgen.py`)
+
+`ntlmv1_nextgen.py` (installed as the `ntlmv1-multi` command) is the modern
+parser. It accepts NTLMv1, `$99$` blobs, and MSCHAPv2, handles ESS automatically,
+and can finish the full NTLMv1 -> NTLM conversion from a cracked potfile in one
+step. Available options:
+
+| Option | Description |
+| --- | --- |
+| `--ntlmv1 <hash>` | NTLMv1 hash in Responder format (`user::host:LM:NT:challenge`). |
+| `--99 <blob>` | `$99$`-style base64 blob. |
+| `--mschapv2 <hash>` | MSCHAPv2 hash in John the Ripper format. |
+| `--nthash <hex>` | 32-char NTLM hash; derives the DES keys and hashcat candidates. |
+| `--password <pw>` | Derive the `--key1`/`--key2` DES keys from a known password. |
+| `--key1 <hex>` / `--key2 <hex>` | Supply the 16-hex DES keys for CT1/CT2 directly (takes precedence over `--potfile`). |
+| `--potfile <path>` | hashcat/rainbowcrackalack potfile of cracked mode 14000 keys; recovers key1/key2 automatically to complete the NTLMv1 -> NTLM conversion. |
+| `--hashcat` | Emit hashcat-format strings for CT1/CT2. |
+| `--json` | Output JSON only (implies CT3 calculation). |
+
 # Usage
 
 ## NTLMv1 without ESS
@@ -273,12 +311,12 @@ The important fields are:
 After you have cracked the mode 14000 DES hashes with hashcat, the cracked DES
 keys land in your potfile as `ct:challenge:key` lines (the key is normally stored
 as `$HEX[...]` since it is raw bytes). Instead of manually copying the keys back
-in with `--key1`/`--key2`, point `ntlmv1-nextgen.py` at the potfile and it will
+in with `--key1`/`--key2`, point `ntlmv1_nextgen.py` at the potfile and it will
 recover the keys, validate them against the ciphertexts, and complete the full
 NTLMv1 -> NTLM conversion in one step:
 
 ```
-python3 ntlmv1-nextgen.py --ntlmv1 "hashcat::DUSTIN-5AA37877:76365E2D142B5612980C67D057EB9EFEEE5EF6EB6FF6E04D:727B4E35F947129EA52B9CDEDAE86934BB23EF89F50FC595:1122334455667788" --potfile ~/.local/share/hashcat/hashcat.potfile
+python3 ntlmv1_nextgen.py --ntlmv1 "hashcat::DUSTIN-5AA37877:76365E2D142B5612980C67D057EB9EFEEE5EF6EB6FF6E04D:727B4E35F947129EA52B9CDEDAE86934BB23EF89F50FC595:1122334455667788" --potfile ~/.local/share/hashcat/hashcat.potfile
 ```
 
 The recovered NTLM hash is printed as the `NTLM` field (or `ntlm` in `--json`).
