@@ -1,2 +1,10 @@
 .DS_Store
 .idea
+
+# uv / Python
+.venv/
+__pycache__/
+*.pyc
+
+# local cracking artifacts
+*.pot
