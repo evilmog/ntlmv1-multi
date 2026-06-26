@@ -268,5 +268,23 @@ The important fields are:
 * challenge - this is the original challenge field
 * srvchallenge - if this is an ESS hash the srv challenge gets populated
 
+## One-shot NTLMv1 to NTLM with a hashcat potfile
+
+After you have cracked the mode 14000 DES hashes with hashcat, the cracked DES
+keys land in your potfile as `ct:challenge:key` lines (the key is normally stored
+as `$HEX[...]` since it is raw bytes). Instead of manually copying the keys back
+in with `--key1`/`--key2`, point `ntlmv1-nextgen.py` at the potfile and it will
+recover the keys, validate them against the ciphertexts, and complete the full
+NTLMv1 -> NTLM conversion in one step:
+
+```
+python3 ntlmv1-nextgen.py --ntlmv1 "hashcat::DUSTIN-5AA37877:76365E2D142B5612980C67D057EB9EFEEE5EF6EB6FF6E04D:727B4E35F947129EA52B9CDEDAE86934BB23EF89F50FC595:1122334455667788" --potfile ~/.local/share/hashcat/hashcat.potfile
+```
+
+The recovered NTLM hash is printed as the `NTLM` field (or `ntlm` in `--json`).
+`--potfile` works with `--ntlmv1`, `--99`, and `--mschapv2`, handles ESS hashes
+(matching on the MD5-derived challenge), and ignores unrelated potfile entries.
+Explicit `--key1`/`--key2` still take precedence over potfile matches.
+
 # Acknowledgement / License
 This repo is based on forum posts by atom the author of hashcat and research by moxie marlinspike. as atoms code is largely MIT licensed this project has also adopted that license to be compatible. This project is not GPL so that any entity can incorporate it into a commercial project without restrictions.
