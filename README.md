@@ -4,7 +4,7 @@ This tool reverses NTLMv1 hashes to NTLM, or more specifically it formats NTLMv1
 # CT3 calculation
 If you specify `--ct3` it will calculate the the final 4 digits of the NTLM for you, if you specify `--json` then  `--ct3` is implied ansd it will return as the element pt3, eg:
 ```
-python3 ntlmv1.py --ntlm "DC1$::MOG:AC51EC464A91A35A04A862DA3106EC2B352661ECEF909C5E:AC51EC464A91A35A04A862DA3106EC2B352661ECEF909C5E:1122334455667788" --json 
+python3 ntlmv1.py --ntlmv1 "DC1$::MOG:AC51EC464A91A35A04A862DA3106EC2B352661ECEF909C5E:AC51EC464A91A35A04A862DA3106EC2B352661ECEF909C5E:1122334455667788" --json 
 
 {"ntlmv1": "DC1$::MOG:AC51EC464A91A35A04A862DA3106EC2B352661ECEF909C5E:AC51EC464A91A35A04A862DA3106EC2B352661ECEF909C5E:1122334455667788", "user": "DC1$", "domain": "MOG", "challenge": "1122334455667788", "lmresp": "AC51EC464A91A35A04A862DA3106EC2B352661ECEF909C5E", "ntresp": "AC51EC464A91A35A04A862DA3106EC2B352661ECEF909C5E", "ct3": "352661ECEF909C5E", "ct3_crack": "ct3_to_ntlm.bin 352661ECEF909C5E 1122334455667788", "pt3": "8c71", "hash1": "AC51EC464A91A35A:1122334455667788", "hash2": "04A862DA3106EC2B:1122334455667788"}
 ```
@@ -16,7 +16,7 @@ I added 2 new options, `--hashcat` and `--hcutils` these set the path to your ha
 
 You would run the tool like this if your hashcat directory was in ~/git/hashcat and your hashcat-utils directory was in ~/git/hashcat-utils:
 ```
-python3 ./ntlmv1.py --ntlm "SERVER1$::MOG:9DE7F41D81C1207400000000000000000000000000000000:DE766A98B60D1C911DCFFFDBB3E521314B2CE34EAB63CC7B:1122334455667788" --hashcat "~/git/hashcat" --hcutils "~/git/hashcat-utils"
+python3 ./ntlmv1.py --ntlmv1 "SERVER1$::MOG:9DE7F41D81C1207400000000000000000000000000000000:DE766A98B60D1C911DCFFFDBB3E521314B2CE34EAB63CC7B:1122334455667788" --hashcat "~/git/hashcat" --hcutils "~/git/hashcat-utils"
 ```
 
 # Dec 10, 2019 Updates
